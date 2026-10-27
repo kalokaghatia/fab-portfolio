@@ -1,0 +1,112 @@
+import { AnimatePresence, motion } from 'motion/react'
+import { useEffect, useState } from 'react'
+import { navigation, site } from '@/content/site'
+import { ease, transition } from '@/lib/motion'
+
+/**
+ * Header fisso in mix-blend-difference: resta leggibile sia sulle sezioni
+ * bianche sia su quelle nere senza cambiare colore via JavaScript.
+ */
+export function SiteHeader() {
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.documentElement.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.documentElement.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-40 px-page pt-4 text-white mix-blend-difference md:pt-5">
+        <div className="grid-page items-start">
+          <a
+            href="#top"
+            className="col-span-2 text-xl leading-none font-extrabold tracking-[-0.05em]"
+          >
+            {site.name}
+          </a>
+
+          <nav aria-label="Principale" className="hidden lg:col-span-6 lg:col-start-5 lg:block">
+            <ul className="flex justify-between label">
+              {navigation.map((item) => (
+                <li key={item.href}>
+                  <a href={item.href} className="group relative inline-block">
+                    {item.label}
+                    <span className="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-500 ease-editorial group-hover:origin-left group-hover:scale-x-100" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <p className="hidden text-right label lg:col-span-2 lg:col-start-11 lg:block">
+            Portfolio — ©{site.year}
+          </p>
+
+          <button
+            type="button"
+            className="col-span-2 col-start-3 justify-self-end label md:col-start-5 lg:hidden"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen(true)}
+          >
+            Menu
+          </button>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            className="fixed inset-0 z-50 flex flex-col bg-ink px-page pt-4 pb-6 text-paper lg:hidden"
+            initial={{ clipPath: 'inset(0 0 100% 0)' }}
+            animate={{ clipPath: 'inset(0 0 0% 0)' }}
+            exit={{ clipPath: 'inset(0 0 100% 0)' }}
+            transition={{ duration: 0.7, ease }}
+          >
+            <div className="flex items-start justify-between">
+              <span className="text-xl leading-none font-extrabold tracking-[-0.05em]">
+                {site.name}
+              </span>
+              <button type="button" className="label" onClick={() => setOpen(false)} autoFocus>
+                Close
+              </button>
+            </div>
+
+            <nav aria-label="Principale" className="mt-auto">
+              <ul>
+                {navigation.map((item, i) => (
+                  <li key={item.href} className="overflow-hidden border-t border-grey-700">
+                    <motion.a
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className="flex items-baseline justify-between py-2 text-[clamp(2.5rem,12vw,5rem)] leading-[0.95] font-semibold tracking-[-0.05em]"
+                      initial={{ y: '100%' }}
+                      animate={{ y: 0 }}
+                      transition={{ ...transition.base, delay: 0.25 + i * 0.05 }}
+                    >
+                      {item.label}
+                      <span className="label text-grey-400">{String(i + 1).padStart(2, '0')}</span>
+                    </motion.a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
