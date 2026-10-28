@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
-import { useLayoutEffect, useRef, useState, type FocusEvent } from 'react'
+import { useEffect, useRef, useState, type FocusEvent } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
 import { Reveal } from '@/components/Reveal'
@@ -12,13 +12,38 @@ import { cn } from '@/utils/cn'
 /*
  * Composizione a collage: ogni progetto ha larghezza, formato e altezza diversi,
  * così la galleria si legge come una pagina di rivista e non come una griglia.
- * Lo schema si ripete ogni quattro progetti.
+ * Lo schema si ripete ogni quattro progetti. `sizes` è la larghezza massima della card,
+ * per far scegliere al browser la versione dell'immagine adatta.
  */
 const collage = [
-  { width: 'w-[min(26vw,46vh)]', aspect: 'portrait', offset: '-translate-y-[7vh]', tilt: -1.5 },
-  { width: 'w-[min(20vw,38vh)]', aspect: 'tall', offset: 'translate-y-[8vh]', tilt: 1.5 },
-  { width: 'w-[min(34vw,64vh)]', aspect: 'landscape', offset: '-translate-y-[3vh]', tilt: -1 },
-  { width: 'w-[min(24vw,46vh)]', aspect: 'square', offset: 'translate-y-[6vh]', tilt: 2 },
+  {
+    width: 'w-[min(26vw,46vh)]',
+    sizes: '26vw',
+    aspect: 'portrait',
+    offset: '-translate-y-[7vh]',
+    tilt: -1.5,
+  },
+  {
+    width: 'w-[min(20vw,38vh)]',
+    sizes: '20vw',
+    aspect: 'tall',
+    offset: 'translate-y-[8vh]',
+    tilt: 1.5,
+  },
+  {
+    width: 'w-[min(34vw,64vh)]',
+    sizes: '34vw',
+    aspect: 'landscape',
+    offset: '-translate-y-[3vh]',
+    tilt: -1,
+  },
+  {
+    width: 'w-[min(24vw,46vh)]',
+    sizes: '24vw',
+    aspect: 'square',
+    offset: 'translate-y-[6vh]',
+    tilt: 2,
+  },
 ] as const
 
 export function SelectedWork() {
@@ -55,7 +80,7 @@ export function SelectedWork() {
               onClick={() => setFilter(category)}
               className={cn(
                 'relative transition-colors duration-300',
-                filter === category ? 'text-ink' : 'text-grey-400 hover:text-ink',
+                filter === category ? 'text-ink' : 'text-grey-500 hover:text-ink',
               )}
             >
               {category}
@@ -93,7 +118,10 @@ function HorizontalGallery({ projects }: { projects: Project[] }) {
   const reduceMotion = useReducedMotion()
 
   // Quanto deve spostarsi il nastro: la sua larghezza meno quella dello schermo.
-  useLayoutEffect(() => {
+  // Si misura dopo il primo disegno (useEffect, non useLayoutEffect): leggere scrollWidth
+  // subito dopo il montaggio costringeva il browser a calcolare in anticipo il layout di
+  // tutta la pagina. La galleria è sotto la piega, quindi l'aggiustamento non si vede.
+  useEffect(() => {
     const measure = () => {
       const track = trackRef.current
       if (track) setDistance(Math.max(0, track.scrollWidth - window.innerWidth))
@@ -198,7 +226,7 @@ function CollageCard({ project, index }: { project: Project; index: number }) {
         >
           {/* Foto sempre centrata nella cornice; al passaggio del mouse si avvicina appena */}
           <div className="transition-transform duration-1000 ease-editorial group-hover:scale-[1.04]">
-            <MediaFrame media={{ ...project.cover, aspect: slot.aspect }} />
+            <MediaFrame media={{ ...project.cover, aspect: slot.aspect }} sizes={slot.sizes} />
           </div>
         </motion.div>
         {/* Didascalia su fondo carta: leggibile anche sopra la scritta WORK nera */}
@@ -228,7 +256,7 @@ function SwipeGallery({ projects }: { projects: Project[] }) {
             aria-label={`${project.title} — ${project.category}, ${project.year}`}
             className="block"
           >
-            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} />
+            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} sizes="78vw" />
             <p className="mt-3 text-lead leading-none font-bold tracking-[-0.04em] uppercase">
               {project.title}
             </p>

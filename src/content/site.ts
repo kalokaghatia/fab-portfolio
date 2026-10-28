@@ -1,11 +1,11 @@
-import portraitImg from '@/assets/photos/fab-portrait.jpg?format=webp&as=img'
-import viaggioBookImg from '@/assets/projects/il-viaggio-per-amarsi/book-spread.png?format=webp&as=img'
-import viaggioMirrorImg from '@/assets/projects/il-viaggio-per-amarsi/poster-amati.png?format=webp&as=img'
-import viaggioPosterImg from '@/assets/projects/il-viaggio-per-amarsi/poster-amare-se-stessi.png?format=webp&as=img'
-import loackerPouchImg from '@/assets/projects/loacker-quadratini/pouch.png?format=webp&as=img'
-import cityNightImg from '@/assets/photos/japan-city-night.jpg?format=webp&as=img'
-import sakeBarrelsImg from '@/assets/photos/japan-sake-barrels.jpg?format=webp&as=img'
-import shinjukuNightImg from '@/assets/photos/japan-shinjuku-night.jpg?format=webp&as=img'
+import portraitImg from '@/assets/photos/fab-portrait.jpg?responsive'
+import viaggioBookImg from '@/assets/projects/il-viaggio-per-amarsi/book-spread.png?responsive'
+import viaggioMirrorImg from '@/assets/projects/il-viaggio-per-amarsi/poster-amati.png?responsive'
+import viaggioPosterImg from '@/assets/projects/il-viaggio-per-amarsi/poster-amare-se-stessi.png?responsive'
+import loackerPouchImg from '@/assets/projects/loacker-quadratini/pouch.png?responsive'
+import cityNightImg from '@/assets/photos/japan-city-night.jpg?responsive'
+import sakeBarrelsImg from '@/assets/photos/japan-sake-barrels.jpg?responsive'
+import shinjukuNightImg from '@/assets/photos/japan-shinjuku-night.jpg?responsive'
 import type {
   JournalEntry,
   Media,
@@ -21,13 +21,13 @@ import type {
  * Tutto ciò che è tra [parentesi quadre] o con src assente è un SEGNAPOSTO
  * da sostituire con materiale reale: nessun dato è stato inventato.
  *
- * Le foto si importano con `?format=webp&as=img`: in build diventano WebP leggeri
- * e portano con sé le dimensioni originali (vedi `image()` qui sotto).
+ * Le foto si importano con `?responsive`: in build diventano WebP leggeri in più
+ * larghezze e portano con sé le dimensioni originali (vedi `image()` qui sotto).
  */
 
-/** Sorgente e dimensioni di una foto importata, nella forma di `Media`. */
-function image({ src, w, h }: { src: string; w: number; h: number }) {
-  return { src, width: w, height: h }
+/** Sorgente, larghezze disponibili e dimensioni di una foto importata, nella forma di `Media`. */
+function image({ src, w, h, srcset }: { src: string; w: number; h: number; srcset?: string }) {
+  return { src, srcSet: srcset, width: w, height: h }
 }
 
 export const site = {

@@ -11,6 +11,8 @@ interface RevealImageProps {
   className?: string
   fill?: boolean
   delay?: number
+  /** Larghezza a cui viene mostrata la foto, per scegliere la versione giusta (vedi MediaFrame). */
+  sizes?: string
 }
 
 /**
@@ -18,7 +20,7 @@ interface RevealImageProps {
  * mentre la foto rientra da un leggero zoom. Al passaggio del mouse la foto si avvicina.
  * Con "riduci movimento" la foto compare subito, senza animazioni.
  */
-export function RevealImage({ media, index, className, fill, delay = 0 }: RevealImageProps) {
+export function RevealImage({ media, index, className, fill, delay = 0, sizes }: RevealImageProps) {
   const reduceMotion = useReducedMotion()
   const skip = reduceMotion ? false : undefined
 
@@ -43,7 +45,13 @@ export function RevealImage({ media, index, className, fill, delay = 0 }: Reveal
             fill && 'size-full',
           )}
         >
-          <MediaFrame media={media} index={index} fill={fill} className={cn(fill && 'size-full')} />
+          <MediaFrame
+            media={media}
+            index={index}
+            fill={fill}
+            sizes={sizes}
+            className={cn(fill && 'size-full')}
+          />
         </div>
       </motion.div>
     </motion.div>

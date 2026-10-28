@@ -42,6 +42,7 @@ export function JapanTeaser() {
             <RevealImage
               media={cover.cover}
               fill
+              sizes="100vw"
               className="aspect-[4/5] md:aspect-[16/8] lg:aspect-[16/7]"
             />
             {/* Titolo sovrapposto alla copertina */}
@@ -104,7 +105,11 @@ export function JapanTeaser() {
             className="col-span-4 block md:col-span-3 lg:col-span-4"
             aria-label={`${entry.city} — ${entry.title}`}
           >
-            <RevealImage media={entry.cover} delay={0.12 * (i + 1)} />
+            <RevealImage
+              media={entry.cover}
+              delay={0.12 * (i + 1)}
+              sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
+            />
             <Caption entry={entry} i={i + 1} />
           </a>
         ))}

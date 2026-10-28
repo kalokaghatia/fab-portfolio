@@ -24,13 +24,25 @@ interface MediaFrameProps {
   /** Riempie il contenitore invece di usare il proprio aspect ratio. */
   fill?: boolean
   loading?: 'eager' | 'lazy'
+  /**
+   * Larghezza a cui viene mostrata l'immagine (attributo `sizes`, es. "(min-width: 48rem) 50vw, 100vw"):
+   * serve al browser per scegliere dal `srcSet` la versione più leggera che basta.
+   */
+  sizes?: string
 }
 
 /**
  * Immagine editoriale. Senza `src` mostra un segnaposto neutro con le stesse
  * proporzioni della foto finale, così il layout resta identico quando arriva.
  */
-export function MediaFrame({ media, className, index, fill, loading = 'lazy' }: MediaFrameProps) {
+export function MediaFrame({
+  media,
+  className,
+  index,
+  fill,
+  loading = 'lazy',
+  sizes,
+}: MediaFrameProps) {
   const frame = cn(
     'relative overflow-hidden',
     !fill && aspectClass[media.aspect],
@@ -43,6 +55,9 @@ export function MediaFrame({ media, className, index, fill, loading = 'lazy' }: 
     return (
       <div className={frame}>
         <img
+          // sizes e srcSet prima di src: il browser sceglie la versione prima di iniziare a scaricare
+          sizes={media.srcSet ? sizes : undefined}
+          srcSet={media.srcSet}
           src={media.src}
           alt={media.alt}
           loading={loading}

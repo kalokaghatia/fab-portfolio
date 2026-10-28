@@ -43,9 +43,11 @@ Sistema visivo: vedi `DESIGN.md`. Alias `@/` → `src/`.
 
 ## Immagini
 
-Importa le foto con `?format=webp&as=img` (es. `import img from '@/assets/foto.jpg?format=webp&as=img'`)
-e passale a `image()` in `src/content/site.ts`: [vite-imagetools](https://github.com/JonasKruckenberg/imagetools)
-le converte in WebP, rimuove i metadati EXIF e fornisce larghezza e altezza.
+Importa le foto con `?responsive` (es. `import img from '@/assets/foto.jpg?responsive'`) e passale
+a `image()` in `src/content/site.ts`: [vite-imagetools](https://github.com/JonasKruckenberg/imagetools)
+le converte in WebP in più larghezze (fino all'originale), rimuove i metadati EXIF e fornisce
+larghezza e altezza. Dove mostri la foto, passa a `MediaFrame`/`RevealImage` il `sizes` con la
+larghezza che occupa (es. `"(min-width: 48rem) 50vw, 100vw"`).
 
 ## Variabili d'ambiente
 
@@ -63,3 +65,8 @@ Build statica compatibile con Netlify e Vercel (rilevamento automatico di Vite):
 
 - comando di build: `npm run build`
 - cartella di output: `dist`
+
+Solo gli indirizzi dei progetti (`/work/<slug>`) vengono riscritti su `index.html`
+(`vercel.json`, `public/_redirects`): tutto il resto, se non esiste, risponde 404. Così
+`robots.txt` e file come `llms.txt` non ricevono per sbaglio la pagina HTML. Se aggiungi
+altre pagine lato client, aggiungi qui anche il loro percorso.

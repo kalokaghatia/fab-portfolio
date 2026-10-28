@@ -59,7 +59,7 @@ export function ThroughMyEyes() {
             <MediaFrame media={collection.cover} index={i + 1} />
             <p className="mt-3 flex justify-between label">
               <span>{collection.title}</span>
-              <span className="text-grey-500">Collection {String(i + 1).padStart(2, '0')}</span>
+              <span className="text-grey-400">Collection {String(i + 1).padStart(2, '0')}</span>
             </p>
           </li>
         ))}

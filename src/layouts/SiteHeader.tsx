@@ -6,6 +6,11 @@ import { ease, transition } from '@/lib/motion'
 /**
  * Header fisso in mix-blend-difference: resta leggibile sia sulle sezioni
  * bianche sia su quelle nere senza cambiare colore via JavaScript.
+ *
+ * Il colore dichiarato è ink, invertito dal filtro prima della fusione: a schermo è
+ * come il bianco in difference, ma gli strumenti di accessibilità (che non calcolano
+ * le fusioni) leggono il contrasto reale, testo scuro su paper. In "contrasto elevato"
+ * di sistema filtro e fusione si spengono e restano i colori forzati.
  */
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
@@ -47,7 +52,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-40 px-page pt-4 text-white mix-blend-difference md:pt-5">
+      <header className="fixed inset-x-0 top-0 z-40 px-page pt-4 text-ink invert mix-blend-difference md:pt-5 forced-colors:filter-none forced-colors:mix-blend-normal">
         <div className="grid-page items-start">
           <a
             href="#top"

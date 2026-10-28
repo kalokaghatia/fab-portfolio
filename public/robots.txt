@@ -1,0 +1,3 @@
+# Tutto il sito è pubblico e indicizzabile.
+User-agent: *
+Allow: /
