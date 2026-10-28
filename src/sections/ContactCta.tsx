@@ -30,7 +30,7 @@ export function ContactCta() {
               {contact.email}
             </a>
           ) : (
-            <p className="mt-3 text-lead font-semibold text-grey-500">[email@to-be-added]</p>
+            <p className="mt-3 text-lead font-semibold text-grey-400">[email@to-be-added]</p>
           )}
         </div>
 
@@ -43,7 +43,7 @@ export function ContactCta() {
                 </a>
               </li>
             ) : (
-              <li key={social.label} className="text-grey-500">
+              <li key={social.label} className="text-grey-400">
                 {social.label} — [link]
               </li>
             ),

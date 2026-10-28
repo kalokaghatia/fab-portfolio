@@ -55,7 +55,7 @@ export function SelectedWork() {
               onClick={() => setFilter(category)}
               className={cn(
                 'relative transition-colors duration-300',
-                filter === category ? 'text-ink' : 'text-grey-400 hover:text-ink',
+                filter === category ? 'text-ink' : 'text-grey-500 hover:text-ink',
               )}
             >
               {category}

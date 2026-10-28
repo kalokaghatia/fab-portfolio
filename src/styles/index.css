@@ -16,8 +16,13 @@
   --color-grey-100: #ebebea;
   --color-grey-200: #dcdcdb;
   --color-grey-300: #c4c4c3;
-  --color-grey-400: #9d9d9c;
-  --color-grey-500: #767675;
+  /*
+   * Grigi per il testo secondario, tarati sul contrasto minimo WCAG:
+   * 500 = testo piccolo su paper (4.6:1); 400 = testo piccolo su ink (5.8:1)
+   * e testo grande su paper (3.1:1). Il 500 su ink non basta: lì si usa il 400.
+   */
+  --color-grey-400: #8b8b8a;
+  --color-grey-500: #6f6f6e;
   --color-grey-600: #555554;
   --color-grey-700: #3a3a39;
   --color-grey-800: #232322;
