@@ -1,10 +1,11 @@
 /// <reference types="vite/client" />
 
 /**
- * Immagini importate con `?format=webp&as=img` (vite-imagetools): convertite in WebP
- * in fase di build, senza metadati EXIF, con le dimensioni in pixel dell'originale.
+ * Foto importate con `?responsive` (vite-imagetools, vedi vite.config.ts): WebP senza
+ * metadati EXIF in più larghezze. `src`, `w` e `h` sono quelli dell'originale; `srcset`
+ * manca se la foto è più stretta della larghezza minima.
  */
-declare module '*as=img' {
-  const image: { src: string; w: number; h: number }
+declare module '*?responsive' {
+  const image: { src: string; w: number; h: number; srcset?: string }
   export default image
 }

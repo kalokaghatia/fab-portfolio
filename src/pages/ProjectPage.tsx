@@ -156,6 +156,9 @@ function ProjectImage({ media, index }: { media: Media; index: number }) {
 
   return (
     <motion.img
+      // Due per riga da 768px in su: il browser sceglie dal srcSet la versione adatta.
+      sizes={media.srcSet ? '(min-width: 48rem) 50vw, 100vw' : undefined}
+      srcSet={media.srcSet}
       src={media.src}
       alt={media.alt}
       // Con le dimensioni il browser riserva lo spazio subito: la pagina non salta mentre le foto caricano.

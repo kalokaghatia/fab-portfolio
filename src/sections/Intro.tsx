@@ -20,7 +20,11 @@ export function Intro() {
 
         <div className="mt-6 grid-page gap-y-12 md:mt-10">
           <figure className="col-span-4 md:col-span-3 lg:sticky lg:top-24 lg:col-span-5 lg:self-start">
-            <RevealImage media={portrait} className="grayscale" />
+            <RevealImage
+              media={portrait}
+              className="grayscale"
+              sizes="(min-width: 64rem) 40vw, (min-width: 48rem) 50vw, 100vw"
+            />
             <figcaption className="mt-3 flex justify-between label">
               <span>Fab.</span>
               <span className="text-grey-500">Portrait — Studio</span>
