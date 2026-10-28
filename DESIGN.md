@@ -12,8 +12,15 @@ Rigorosamente bianco e nero, con grigi neutri (nessuna tinta). Token in `src/sty
 | `paper`        | `#f5f5f4` | Fondo principale (bianco carta, non ottico) |
 | `grey-100…900` | neutri    | Linee, testi secondari, segnaposto foto     |
 
+Testo secondario, tarato sul contrasto minimo WCAG:
+
+- su `paper`: `grey-500` per il testo piccolo (4.6:1); `grey-400` solo per il testo grande (3.1:1);
+- su `ink`: `grey-400` (5.8:1). Il `grey-500` sul nero non basta.
+
 Le sezioni alternano chiaro/scuro: Hero, About e Work su `paper`; Photography su `ink`; Japan su `paper`; Contact e footer su `ink`.
-L'header usa `mix-blend-difference`, quindi resta leggibile su entrambi i fondi.
+L'header usa `mix-blend-difference`, quindi resta leggibile su entrambi i fondi. Il colore
+dichiarato è `ink` invertito da un filtro: a schermo è identico al bianco, ma gli strumenti
+di accessibilità (che non calcolano le fusioni) leggono il contrasto reale.
 
 ## Tipografia
 
@@ -45,8 +52,10 @@ dalla distanza tra `label` e `text-display`, non dal colore.
 ## Immagini
 
 - Formati: `portrait` 4:5 · `landscape` 3:2 · `square` 1:1 · `tall` 2:3 · `slim` 3:5.
-- Le foto si importano con `?format=webp&as=img` (vedi `src/content/site.ts`): in build
-  diventano WebP senza metadati EXIF e portano con sé le dimensioni originali.
+- Le foto si importano con `?responsive` (vedi `src/content/site.ts`): in build diventano
+  WebP senza metadati EXIF in più larghezze, e portano con sé le dimensioni originali.
+  Dove si mostrano, `sizes` dice al browser quanto spazio occupano, così scarica la
+  versione più leggera che basta.
 - `MediaFrame` mostra la foto, o un segnaposto grigio con le stesse proporzioni
   ("Fig. 03 — Photo to come"), così il layout non cambia quando arrivano i file.
 
