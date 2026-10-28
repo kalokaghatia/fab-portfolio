@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { motion, useIsPresent, useReducedMotion } from 'motion/react'
 import { useEffect } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
@@ -10,10 +10,23 @@ import type { Media, Project } from '@/types/content'
 import { cn } from '@/utils/cn'
 
 /**
+ * Torna alla homepage: con "Indietro" se la pagina è stata aperta dal sito,
+ * altrimenti (link diretto) con una nuova navigazione.
+ */
+function closeProject() {
+  const state = window.history.state as RouteState | null
+  if (state?.fromSite) window.history.back()
+  else navigate('/')
+}
+
+/**
  * Pagina di un progetto, aperta sopra la homepage come un foglio che sale.
  * Le immagini sono mostrate intere, senza ritagli, nel loro formato originale.
+ * Titolo della scheda e blocco dello scroll sono gestiti da App.
  */
 export function ProjectPage({ project }: { project: Project }) {
+  const isPresent = useIsPresent()
+  const reduceMotion = useReducedMotion()
   const images = [project.cover, ...(project.gallery ?? [])]
   const position = projects.findIndex((p) => p.slug === project.slug)
   const next = projects[(position + 1) % projects.length]
@@ -23,28 +36,15 @@ export function ProjectPage({ project }: { project: Project }) {
     { label: 'Year', value: project.year },
   ].filter((d): d is { label: string; value: string } => Boolean(d.value))
 
-  // Torna alla homepage: con "Indietro" se la pagina è stata aperta dal sito,
-  // altrimenti (link diretto) con una nuova navigazione.
-  const close = () => {
-    const state = window.history.state as RouteState | null
-    if (state?.fromSite) window.history.back()
-    else navigate('/')
-  }
-
+  // Esc chiude solo la pagina attiva, non quella che sta uscendo dopo "Next project".
   useEffect(() => {
-    const previousTitle = document.title
-    document.title = `${project.title} — ${site.name}`
+    if (!isPresent) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') close()
+      if (event.key === 'Escape') closeProject()
     }
-    document.documentElement.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
-    return () => {
-      document.title = previousTitle
-      document.documentElement.style.overflow = ''
-      window.removeEventListener('keydown', onKey)
-    }
-  })
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isPresent])
 
   return (
     <motion.div
@@ -52,16 +52,17 @@ export function ProjectPage({ project }: { project: Project }) {
       aria-modal="true"
       aria-labelledby="project-title"
       className="fixed inset-0 z-50 overflow-y-auto bg-paper"
-      initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
-      animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-      exit={{ clipPath: 'inset(0% 0% 100% 0%)' }}
+      // Con "riduci movimento" la pagina compare in dissolvenza invece di salire come un foglio.
+      initial={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(100% 0% 0% 0%)' }}
+      animate={reduceMotion ? { opacity: 1 } : { clipPath: 'inset(0% 0% 0% 0%)' }}
+      exit={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(0% 0% 100% 0%)' }}
       transition={{ duration: 0.8, ease }}
     >
       <div className="sticky top-0 z-10 flex items-center justify-between bg-paper/90 px-page py-4 backdrop-blur-sm">
         <span className="text-xl leading-none font-extrabold tracking-[-0.05em]">{site.name}</span>
         <button
           type="button"
-          onClick={close}
+          onClick={closeProject}
           className="group flex items-center gap-2 label"
           autoFocus
         >
@@ -124,6 +125,7 @@ export function ProjectPage({ project }: { project: Project }) {
         {next && next.slug !== project.slug && (
           <ProjectLink
             slug={next.slug}
+            replace
             className="group mt-section block border-t border-ink pt-4"
             aria-label={`Next project: ${next.title}`}
           >
@@ -156,13 +158,16 @@ function ProjectImage({ media, index }: { media: Media; index: number }) {
     <motion.img
       src={media.src}
       alt={media.alt}
+      // Con le dimensioni il browser riserva lo spazio subito: la pagina non salta mentre le foto caricano.
+      width={media.width}
+      height={media.height}
       loading={index < 2 ? 'eager' : 'lazy'}
       decoding="async"
       className={cn(
         'block h-auto',
         media.cutout && 'mix-blend-multiply',
         // PNG scontornati: alla loro dimensione naturale (mai ingranditi), centrati.
-        media.fit === 'contain' ? 'mx-auto w-auto max-w-full py-8' : 'w-full',
+        media.fit === 'contain' ? 'mx-auto max-w-full py-8' : 'w-full',
       )}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}

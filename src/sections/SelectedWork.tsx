@@ -1,5 +1,5 @@
-import { motion, useScroll, useTransform } from 'motion/react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { useLayoutEffect, useRef, useState, type FocusEvent } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
 import { Reveal } from '@/components/Reveal'
@@ -45,7 +45,7 @@ export function SelectedWork() {
         <div
           className="mt-10 flex flex-wrap gap-x-5 gap-y-2 label md:mt-14"
           role="group"
-          aria-label="Filtra per categoria"
+          aria-label="Filter by category"
         >
           {projectCategories.map((category) => (
             <button
@@ -90,6 +90,7 @@ function HorizontalGallery({ projects }: { projects: Project[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLUListElement>(null)
   const [distance, setDistance] = useState(0)
+  const reduceMotion = useReducedMotion()
 
   // Quanto deve spostarsi il nastro: la sua larghezza meno quella dello schermo.
   useLayoutEffect(() => {
@@ -109,16 +110,41 @@ function HorizontalGallery({ projects }: { projects: Project[] }) {
   const x = useTransform(scrollYProgress, [0, 1], [0, -distance])
   const wordX = useTransform(scrollYProgress, [0, 1], ['5%', '-35%'])
 
+  // Tastiera: il nastro si muove solo con lo scroll verticale, quindi il Tab su una card
+  // fuori schermo porta la pagina al punto in cui quella card arriva al centro.
+  const handleFocus = (event: FocusEvent<HTMLUListElement>) => {
+    const container = containerRef.current
+    const card = event.target.closest('li')
+    if (!container || !card || !event.target.matches(':focus-visible')) return
+    const rect = card.getBoundingClientRect()
+    const visible =
+      rect.left >= 0 &&
+      rect.right <= window.innerWidth &&
+      rect.top >= 0 &&
+      rect.bottom <= window.innerHeight
+    if (visible) return
+    const shift = Math.min(
+      distance,
+      Math.max(0, card.offsetLeft + card.offsetWidth / 2 - window.innerWidth / 2),
+    )
+    const range = container.offsetHeight - window.innerHeight
+    const top = container.getBoundingClientRect().top + window.scrollY
+    window.scrollTo({ top: top + (distance > 0 ? (shift / distance) * range : 0) })
+  }
+
   return (
     <div
       ref={containerRef}
       className="relative mt-10"
       style={{ height: `calc(100svh + ${distance}px)` }}
     >
-      <div className="sticky top-0 flex h-svh items-center overflow-hidden">
+      {/* overflow-clip, non hidden: il browser non può scorrerlo di lato quando una card riceve il focus */}
+      <div className="sticky top-0 flex h-svh items-center overflow-clip">
+        {/* Parallasse decorativa, ferma con "riduci movimento". Il nastro dei progetti invece si muove
+            comunque: è il modo stesso di sfogliarli. */}
         <motion.p
           aria-hidden
-          style={{ x: wordX }}
+          style={{ x: reduceMotion ? '5%' : wordX }}
           className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-[38vw] leading-none font-extrabold tracking-[-0.05em] whitespace-nowrap text-ink uppercase select-none"
         >
           Work — Work
@@ -127,6 +153,7 @@ function HorizontalGallery({ projects }: { projects: Project[] }) {
         <motion.ul
           ref={trackRef}
           style={{ x }}
+          onFocus={handleFocus}
           className="relative flex items-center gap-[7vw] pr-[12vw] pl-[10vw]"
         >
           {projects.map((project, i) => (

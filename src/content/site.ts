@@ -1,11 +1,11 @@
-import portraitSrc from '@/assets/photos/fab-portrait.jpg'
-import viaggioBookSrc from '@/assets/projects/il-viaggio-per-amarsi/book-spread.png'
-import viaggioMirrorSrc from '@/assets/projects/il-viaggio-per-amarsi/poster-amati.png'
-import viaggioPosterSrc from '@/assets/projects/il-viaggio-per-amarsi/poster-amare-se-stessi.png'
-import loackerPouchSrc from '@/assets/projects/loacker-quadratini/pouch.png'
-import cityNightSrc from '@/assets/photos/japan-city-night.jpg'
-import sakeBarrelsSrc from '@/assets/photos/japan-sake-barrels.jpg'
-import shinjukuNightSrc from '@/assets/photos/japan-shinjuku-night.jpg'
+import portraitImg from '@/assets/photos/fab-portrait.jpg?format=webp&as=img'
+import viaggioBookImg from '@/assets/projects/il-viaggio-per-amarsi/book-spread.png?format=webp&as=img'
+import viaggioMirrorImg from '@/assets/projects/il-viaggio-per-amarsi/poster-amati.png?format=webp&as=img'
+import viaggioPosterImg from '@/assets/projects/il-viaggio-per-amarsi/poster-amare-se-stessi.png?format=webp&as=img'
+import loackerPouchImg from '@/assets/projects/loacker-quadratini/pouch.png?format=webp&as=img'
+import cityNightImg from '@/assets/photos/japan-city-night.jpg?format=webp&as=img'
+import sakeBarrelsImg from '@/assets/photos/japan-sake-barrels.jpg?format=webp&as=img'
+import shinjukuNightImg from '@/assets/photos/japan-shinjuku-night.jpg?format=webp&as=img'
 import type {
   JournalEntry,
   Media,
@@ -20,7 +20,15 @@ import type {
  * Contenuti della homepage.
  * Tutto ciò che è tra [parentesi quadre] o con src assente è un SEGNAPOSTO
  * da sostituire con materiale reale: nessun dato è stato inventato.
+ *
+ * Le foto si importano con `?format=webp&as=img`: in build diventano WebP leggeri
+ * e portano con sé le dimensioni originali (vedi `image()` qui sotto).
  */
+
+/** Sorgente e dimensioni di una foto importata, nella forma di `Media`. */
+function image({ src, w, h }: { src: string; w: number; h: number }) {
+  return { src, width: w, height: h }
+}
 
 export const site = {
   name: 'FAB.',
@@ -65,7 +73,7 @@ export const heroPhotos: Media[] = [
 ]
 
 export const portrait: Media = {
-  src: portraitSrc,
+  ...image(portraitImg),
   alt: 'Black and white studio portrait of Fab in a black turtleneck, hand resting on her cheek',
   aspect: 'portrait',
 }
@@ -85,20 +93,20 @@ export const projects: Project[] = [
     category: 'Graphic Design',
     year: '[Year]',
     cover: {
-      src: viaggioPosterSrc,
+      ...image(viaggioPosterImg),
       fit: 'contain',
       alt: 'Pink poster with a black and white illustration of a woman hugging herself: "Amare se stessi è l’inizio di una storia d’amore lunga tutta la vita"',
       aspect: 'portrait',
     },
     gallery: [
       {
-        src: viaggioBookSrc,
+        ...image(viaggioBookImg),
         fit: 'contain',
         alt: 'Folded poster with the book cover "Il viaggio per amarsi" and its inside pages',
         aspect: 'portrait',
       },
       {
-        src: viaggioMirrorSrc,
+        ...image(viaggioMirrorImg),
         fit: 'contain',
         alt: 'Pink poster of a woman looking at herself in a hand mirror: "Amati. Guardati allo specchio e impara ad apprezzarti"',
         aspect: 'portrait',
@@ -111,7 +119,7 @@ export const projects: Project[] = [
     category: 'Graphic Design',
     year: '[Year]',
     cover: {
-      src: loackerPouchSrc,
+      ...image(loackerPouchImg),
       fit: 'contain',
       alt: 'Red and gold stand-up pouch for Loacker Quadratini Napolitaner hazelnut wafers, 250 g',
       aspect: 'portrait',
@@ -153,7 +161,7 @@ export const journalEntries: JournalEntry[] = [
     city: '[City]',
     date: '[Month Year]',
     cover: {
-      src: cityNightSrc,
+      ...image(cityNightImg),
       alt: 'Aerial view of a city at night, an orange-lit highway winding between skyscrapers',
       aspect: 'tall',
       focus: '50% 62%',
@@ -165,7 +173,7 @@ export const journalEntries: JournalEntry[] = [
     city: '[City]',
     date: '[Month Year]',
     cover: {
-      src: sakeBarrelsSrc,
+      ...image(sakeBarrelsImg),
       alt: 'Wall of painted sake barrels with Japanese calligraphy',
       aspect: 'portrait',
     },
@@ -176,7 +184,7 @@ export const journalEntries: JournalEntry[] = [
     city: '[City]',
     date: '[Month Year]',
     cover: {
-      src: shinjukuNightSrc,
+      ...image(shinjukuNightImg),
       alt: 'Crowded street at night lined with glowing neon signs',
       aspect: 'portrait',
       focus: '50% 60%',

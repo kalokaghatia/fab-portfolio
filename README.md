@@ -25,11 +25,13 @@ Base per un sito vetrina: React 19, TypeScript (strict), Vite, Tailwind CSS 4.
 
 ```
 src/
-  components/  elementi riutilizzabili (MediaFrame, Reveal)
+  assets/      foto e immagini dei progetti (convertite in WebP in build)
+  components/  elementi riutilizzabili (MediaFrame, Reveal, RevealImage, ProjectLink, Wordmark)
   content/     testi e dati del sito (segnaposto da sostituire)
-  hooks/       hook React (useFinePointer)
+  hooks/       hook React (useMediaQuery, useFinePointer, usePathname)
   layouts/     header, menu mobile, footer
-  lib/         preset di animazione condivisi
+  lib/         preset di animazione e router minimo (History API)
+  pages/       pagina di un progetto, aperta sopra la homepage
   sections/    sezioni della homepage
   styles/      design tokens e CSS globali (Tailwind)
   test/        setup di Vitest e Testing Library
@@ -39,9 +41,21 @@ src/
 
 Sistema visivo: vedi `DESIGN.md`. Alias `@/` → `src/`.
 
+## Immagini
+
+Importa le foto con `?format=webp&as=img` (es. `import img from '@/assets/foto.jpg?format=webp&as=img'`)
+e passale a `image()` in `src/content/site.ts`: [vite-imagetools](https://github.com/JonasKruckenberg/imagetools)
+le converte in WebP, rimuove i metadati EXIF e fornisce larghezza e altezza.
+
 ## Variabili d'ambiente
 
-Copia `.env.example` in `.env.local`. Solo le variabili `VITE_*` arrivano al browser: non inserire segreti.
+Al momento il sito non ne usa. Se servono, aggiungile a `.env.example` e copialo in `.env.local`:
+solo le variabili `VITE_*` arrivano al browser, quindi non inserire segreti.
+
+## Fine riga
+
+`.gitattributes` impone LF su tutti i file di testo, come si aspetta Prettier. Su una copia
+clonata prima di questa regola, `npm run format` converte i file esistenti.
 
 ## Deploy
 

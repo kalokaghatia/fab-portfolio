@@ -26,7 +26,7 @@
   /* Scala tipografica: microtesti editoriali ↔ titoli enormi */
   --text-micro: 0.6875rem;
   --text-micro--line-height: 1.25;
-  --text-micro--letter-spacing: 0.04em;
+  --text-micro--letter-spacing: 0.06em;
   --text-small: 0.8125rem;
   --text-small--line-height: 1.4;
   --text-body: 1rem;
@@ -105,7 +105,7 @@
 @utility label {
   font-size: var(--text-micro);
   line-height: var(--text-micro--line-height);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--text-micro--letter-spacing);
   text-transform: uppercase;
   font-weight: 500;
 }
