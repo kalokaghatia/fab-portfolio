@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
 import { navigation, site } from '@/content/site'
 import { ease, transition } from '@/lib/motion'
 
@@ -9,17 +9,39 @@ import { ease, transition } from '@/lib/motion'
  */
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const menuRef = useRef<HTMLDivElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  // Chiudendo con Close o Esc il focus torna su "Menu"; con un link resta sulla sezione scelta.
+  const returnFocus = useRef(false)
+
+  const closeMenu = () => {
+    returnFocus.current = true
+    setOpen(false)
+  }
 
   useEffect(() => {
     if (!open) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
+      if (event.key !== 'Escape') return
+      returnFocus.current = true
+      setOpen(false)
     }
+    // Con il menu aperto il resto della pagina non è raggiungibile da tastiera, mouse e screen reader.
+    const menu = menuRef.current
+    const menuButton = menuButtonRef.current
+    const background = [...(menu?.parentElement?.children ?? [])].filter(
+      (element): element is HTMLElement => element !== menu && element instanceof HTMLElement,
+    )
+    for (const element of background) element.inert = true
     document.documentElement.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
     return () => {
+      for (const element of background) element.inert = false
       document.documentElement.style.overflow = ''
       window.removeEventListener('keydown', onKey)
+      if (returnFocus.current) menuButton?.focus()
+      returnFocus.current = false
     }
   }, [open])
 
@@ -34,7 +56,7 @@ export function SiteHeader() {
             {site.name}
           </a>
 
-          <nav aria-label="Principale" className="hidden lg:col-span-6 lg:col-start-5 lg:block">
+          <nav aria-label="Main" className="hidden lg:col-span-6 lg:col-start-5 lg:block">
             <ul className="flex justify-between label">
               {navigation.map((item) => (
                 <li key={item.href}>
@@ -52,6 +74,7 @@ export function SiteHeader() {
           </p>
 
           <button
+            ref={menuButtonRef}
             type="button"
             className="col-span-2 col-start-3 justify-self-end label md:col-start-5 lg:hidden"
             aria-expanded={open}
@@ -66,26 +89,28 @@ export function SiteHeader() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={menuRef}
             id="mobile-menu"
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
             className="fixed inset-0 z-50 flex flex-col bg-ink px-page pt-4 pb-6 text-paper lg:hidden"
-            initial={{ clipPath: 'inset(0 0 100% 0)' }}
-            animate={{ clipPath: 'inset(0 0 0% 0)' }}
-            exit={{ clipPath: 'inset(0 0 100% 0)' }}
+            // Con "riduci movimento" il menu compare in dissolvenza invece di scendere come una tenda.
+            initial={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(0 0 100% 0)' }}
+            animate={reduceMotion ? { opacity: 1 } : { clipPath: 'inset(0 0 0% 0)' }}
+            exit={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(0 0 100% 0)' }}
             transition={{ duration: 0.7, ease }}
           >
             <div className="flex items-start justify-between">
               <span className="text-xl leading-none font-extrabold tracking-[-0.05em]">
                 {site.name}
               </span>
-              <button type="button" className="label" onClick={() => setOpen(false)} autoFocus>
+              <button type="button" className="label" onClick={closeMenu} autoFocus>
                 Close
               </button>
             </div>
 
-            <nav aria-label="Principale" className="mt-auto">
+            <nav aria-label="Main" className="mt-auto">
               <ul>
                 {navigation.map((item, i) => (
                   <li key={item.href} className="overflow-hidden border-t border-grey-700">

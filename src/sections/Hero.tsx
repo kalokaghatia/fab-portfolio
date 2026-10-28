@@ -54,7 +54,7 @@ export function Hero() {
     return () => window.clearInterval(id)
   }, [finePointer, reduceMotion, count])
 
-  // Allo scroll la tipografia si alza e la pila si allontana.
+  // Allo scroll la tipografia si alza e la pila si allontana (non con "riduci movimento").
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
@@ -109,7 +109,7 @@ export function Hero() {
         className="pointer-events-none absolute top-[44%] left-[72.5%] z-20 md:left-[80%] w-[clamp(9rem,20vw,18rem)] -translate-x-1/2 -translate-y-1/2 lg:top-1/2"
         style={{ x: followX, y: followY }}
       >
-        <motion.div style={{ y: stackY }} className="relative">
+        <motion.div style={{ y: reduceMotion ? 0 : stackY }} className="relative">
           {heroPhotos.map((photo, i) => {
             const offset = stackOffsets[i % stackOffsets.length] ?? { rotate: 0, x: 0, y: 0 }
             const depth = (i - active + count) % count
@@ -137,7 +137,7 @@ export function Hero() {
       </motion.div>
 
       {/* Logo tipografico a tutta larghezza */}
-      <motion.div style={{ y: typeY }} className="relative z-10 mt-auto">
+      <motion.div style={{ y: reduceMotion ? 0 : typeY }} className="relative z-10 mt-auto">
         <Wordmark as="h1" animated />
       </motion.div>
     </section>

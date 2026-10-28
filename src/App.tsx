@@ -4,7 +4,7 @@ import { projects, site } from '@/content/site'
 import { usePathname } from '@/hooks/usePathname'
 import { SiteFooter } from '@/layouts/SiteFooter'
 import { SiteHeader } from '@/layouts/SiteHeader'
-import { projectPath } from '@/lib/router'
+import { projectPath, type RouteState } from '@/lib/router'
 import { ProjectPage } from '@/pages/ProjectPage'
 import { ContactCta } from '@/sections/ContactCta'
 import { Hero } from '@/sections/Hero'
@@ -33,25 +33,35 @@ export default function App() {
 
   useEffect(() => {
     if (!projectOpen) return
+    // Se il progetto è stato aperto da una card, chiudendo il focus torna lì invece di perdersi.
+    const state = window.history.state as RouteState | null
+    const opener = state?.fromSite
+      ? document.querySelector<HTMLElement>(`main a[href="${window.location.pathname}"]`)
+      : null
     document.documentElement.style.overflow = 'hidden'
     return () => {
       document.documentElement.style.overflow = ''
+      opener?.focus({ preventScroll: true })
     }
   }, [projectOpen])
 
   return (
-    // reducedMotion="user": con "riduci movimento" attivo spariscono gli spostamenti, restano le dissolvenze.
+    // reducedMotion="user": con "riduci movimento" le animazioni di spostamento diventano istantanee.
+    // Le parallassi legate allo scroll le disattivano i singoli componenti (useReducedMotion).
     <MotionConfig reducedMotion="user">
-      <SiteHeader />
-      <main>
-        <Hero />
-        <Intro />
-        <SelectedWork />
-        <ThroughMyEyes />
-        <JapanTeaser />
-        <ContactCta />
-      </main>
-      <SiteFooter />
+      {/* Con un progetto aperto la homepage resta visibile sotto, ma tastiera, mouse e screen reader non la raggiungono. */}
+      <div inert={projectOpen}>
+        <SiteHeader />
+        <main>
+          <Hero />
+          <Intro />
+          <SelectedWork />
+          <ThroughMyEyes />
+          <JapanTeaser />
+          <ContactCta />
+        </main>
+        <SiteFooter />
+      </div>
       <AnimatePresence>
         {activeProject && <ProjectPage key={activeProject.slug} project={activeProject} />}
       </AnimatePresence>

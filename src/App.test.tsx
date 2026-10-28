@@ -55,4 +55,17 @@ describe('App', () => {
     expect(document.title).toBe('Home')
     expect(document.documentElement.style.overflow).toBe('')
   })
+
+  test('con un progetto aperto la homepage è inert, e chiudendo il focus torna alla card', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    const card = screen.getByRole('link', { name: cardName(first) })
+
+    await user.click(card)
+    expect(screen.getByRole('main').closest('[inert]')).not.toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Close' }))
+    await waitFor(() => expect(card).toHaveFocus())
+    expect(screen.getByRole('main').closest('[inert]')).toBeNull()
+  })
 })

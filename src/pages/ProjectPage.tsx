@@ -1,4 +1,4 @@
-import { motion, useIsPresent } from 'motion/react'
+import { motion, useIsPresent, useReducedMotion } from 'motion/react'
 import { useEffect } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
@@ -26,6 +26,7 @@ function closeProject() {
  */
 export function ProjectPage({ project }: { project: Project }) {
   const isPresent = useIsPresent()
+  const reduceMotion = useReducedMotion()
   const images = [project.cover, ...(project.gallery ?? [])]
   const position = projects.findIndex((p) => p.slug === project.slug)
   const next = projects[(position + 1) % projects.length]
@@ -51,9 +52,10 @@ export function ProjectPage({ project }: { project: Project }) {
       aria-modal="true"
       aria-labelledby="project-title"
       className="fixed inset-0 z-50 overflow-y-auto bg-paper"
-      initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
-      animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-      exit={{ clipPath: 'inset(0% 0% 100% 0%)' }}
+      // Con "riduci movimento" la pagina compare in dissolvenza invece di salire come un foglio.
+      initial={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(100% 0% 0% 0%)' }}
+      animate={reduceMotion ? { opacity: 1 } : { clipPath: 'inset(0% 0% 0% 0%)' }}
+      exit={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(0% 0% 100% 0%)' }}
       transition={{ duration: 0.8, ease }}
     >
       <div className="sticky top-0 z-10 flex items-center justify-between bg-paper/90 px-page py-4 backdrop-blur-sm">

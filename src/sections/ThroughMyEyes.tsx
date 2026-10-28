@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from 'motion/react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { Reveal } from '@/components/Reveal'
@@ -15,8 +15,10 @@ const widthByAspect = {
 
 export function ThroughMyEyes() {
   const ref = useRef<HTMLElement>(null)
+  const reduceMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   // Il nastro di foto scorre in orizzontale mentre la pagina scorre in verticale.
+  // Con "riduci movimento" resta fermo e si sfoglia di lato, come una normale lista scorrevole.
   const x = useTransform(scrollYProgress, [0, 1], ['8%', '-42%'])
 
   return (
@@ -42,7 +44,13 @@ export function ThroughMyEyes() {
         </ul>
       </div>
 
-      <motion.ul style={{ x }} className="mt-14 flex items-end gap-4 pl-[8vw] md:mt-24 md:gap-6">
+      <motion.ul
+        style={reduceMotion ? undefined : { x }}
+        className={cn(
+          'mt-14 flex items-end gap-4 pl-[8vw] md:mt-24 md:gap-6',
+          reduceMotion && 'overflow-x-auto pr-[8vw]',
+        )}
+      >
         {photoCollections.map((collection, i) => (
           <li
             key={collection.slug}
