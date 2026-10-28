@@ -8,6 +8,9 @@ export type AspectRatio = 'portrait' | 'landscape' | 'square' | 'tall' | 'slim'
 /** Immagine reale (src valorizzato) oppure segnaposto in attesa della foto. */
 export interface Media {
   src?: string
+  /** Dimensioni in pixel dell'originale: riservano lo spazio prima che l'immagine carichi. */
+  width?: number
+  height?: number
   alt: string
   aspect: AspectRatio
   /**

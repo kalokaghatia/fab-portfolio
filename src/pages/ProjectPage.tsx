@@ -158,13 +158,16 @@ function ProjectImage({ media, index }: { media: Media; index: number }) {
     <motion.img
       src={media.src}
       alt={media.alt}
+      // Con le dimensioni il browser riserva lo spazio subito: la pagina non salta mentre le foto caricano.
+      width={media.width}
+      height={media.height}
       loading={index < 2 ? 'eager' : 'lazy'}
       decoding="async"
       className={cn(
         'block h-auto',
         media.cutout && 'mix-blend-multiply',
         // PNG scontornati: alla loro dimensione naturale (mai ingranditi), centrati.
-        media.fit === 'contain' ? 'mx-auto w-auto max-w-full py-8' : 'w-full',
+        media.fit === 'contain' ? 'mx-auto max-w-full py-8' : 'w-full',
       )}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
