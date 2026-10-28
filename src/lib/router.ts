@@ -19,9 +19,11 @@ export function subscribeToRoute(onChange: () => void) {
   }
 }
 
-export function navigate(to: string, state: RouteState = {}) {
+/** Con `replace` la nuova pagina prende il posto di quella corrente nella cronologia. */
+export function navigate(to: string, state: RouteState = {}, { replace = false } = {}) {
   if (to === window.location.pathname) return
-  window.history.pushState(state, '', to)
+  if (replace) window.history.replaceState(state, '', to)
+  else window.history.pushState(state, '', to)
   listeners.forEach((listener) => listener())
 }
 

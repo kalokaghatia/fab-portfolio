@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { motion, useIsPresent } from 'motion/react'
 import { useEffect } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
@@ -10,10 +10,22 @@ import type { Media, Project } from '@/types/content'
 import { cn } from '@/utils/cn'
 
 /**
+ * Torna alla homepage: con "Indietro" se la pagina è stata aperta dal sito,
+ * altrimenti (link diretto) con una nuova navigazione.
+ */
+function closeProject() {
+  const state = window.history.state as RouteState | null
+  if (state?.fromSite) window.history.back()
+  else navigate('/')
+}
+
+/**
  * Pagina di un progetto, aperta sopra la homepage come un foglio che sale.
  * Le immagini sono mostrate intere, senza ritagli, nel loro formato originale.
+ * Titolo della scheda e blocco dello scroll sono gestiti da App.
  */
 export function ProjectPage({ project }: { project: Project }) {
+  const isPresent = useIsPresent()
   const images = [project.cover, ...(project.gallery ?? [])]
   const position = projects.findIndex((p) => p.slug === project.slug)
   const next = projects[(position + 1) % projects.length]
@@ -23,28 +35,15 @@ export function ProjectPage({ project }: { project: Project }) {
     { label: 'Year', value: project.year },
   ].filter((d): d is { label: string; value: string } => Boolean(d.value))
 
-  // Torna alla homepage: con "Indietro" se la pagina è stata aperta dal sito,
-  // altrimenti (link diretto) con una nuova navigazione.
-  const close = () => {
-    const state = window.history.state as RouteState | null
-    if (state?.fromSite) window.history.back()
-    else navigate('/')
-  }
-
+  // Esc chiude solo la pagina attiva, non quella che sta uscendo dopo "Next project".
   useEffect(() => {
-    const previousTitle = document.title
-    document.title = `${project.title} — ${site.name}`
+    if (!isPresent) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') close()
+      if (event.key === 'Escape') closeProject()
     }
-    document.documentElement.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
-    return () => {
-      document.title = previousTitle
-      document.documentElement.style.overflow = ''
-      window.removeEventListener('keydown', onKey)
-    }
-  })
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isPresent])
 
   return (
     <motion.div
@@ -61,7 +60,7 @@ export function ProjectPage({ project }: { project: Project }) {
         <span className="text-xl leading-none font-extrabold tracking-[-0.05em]">{site.name}</span>
         <button
           type="button"
-          onClick={close}
+          onClick={closeProject}
           className="group flex items-center gap-2 label"
           autoFocus
         >
@@ -124,6 +123,7 @@ export function ProjectPage({ project }: { project: Project }) {
         {next && next.slug !== project.slug && (
           <ProjectLink
             slug={next.slug}
+            replace
             className="group mt-section block border-t border-ink pt-4"
             aria-label={`Next project: ${next.title}`}
           >

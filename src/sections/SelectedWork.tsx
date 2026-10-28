@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'motion/react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState, type FocusEvent } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
 import { Reveal } from '@/components/Reveal'
@@ -109,13 +109,29 @@ function HorizontalGallery({ projects }: { projects: Project[] }) {
   const x = useTransform(scrollYProgress, [0, 1], [0, -distance])
   const wordX = useTransform(scrollYProgress, [0, 1], ['5%', '-35%'])
 
+  // Tastiera: il nastro si muove solo con lo scroll verticale, quindi il Tab su una card
+  // fuori schermo porta la pagina al punto in cui quella card arriva al centro.
+  const handleFocus = (event: FocusEvent<HTMLUListElement>) => {
+    const container = containerRef.current
+    const card = event.target.closest('li')
+    if (!container || !card || !event.target.matches(':focus-visible')) return
+    const shift = Math.min(
+      distance,
+      Math.max(0, card.offsetLeft + card.offsetWidth / 2 - window.innerWidth / 2),
+    )
+    const range = container.offsetHeight - window.innerHeight
+    const top = container.getBoundingClientRect().top + window.scrollY
+    window.scrollTo({ top: top + (distance > 0 ? (shift / distance) * range : 0) })
+  }
+
   return (
     <div
       ref={containerRef}
       className="relative mt-10"
       style={{ height: `calc(100svh + ${distance}px)` }}
     >
-      <div className="sticky top-0 flex h-svh items-center overflow-hidden">
+      {/* overflow-clip, non hidden: il browser non può scorrerlo di lato quando una card riceve il focus */}
+      <div className="sticky top-0 flex h-svh items-center overflow-clip">
         <motion.p
           aria-hidden
           style={{ x: wordX }}
@@ -127,6 +143,7 @@ function HorizontalGallery({ projects }: { projects: Project[] }) {
         <motion.ul
           ref={trackRef}
           style={{ x }}
+          onFocus={handleFocus}
           className="relative flex items-center gap-[7vw] pr-[12vw] pl-[10vw]"
         >
           {projects.map((project, i) => (
