@@ -68,4 +68,12 @@ describe('App', () => {
     await waitFor(() => expect(card).toHaveFocus())
     expect(screen.getByRole('main').closest('[inert]')).toBeNull()
   })
+
+  test('un indirizzo sconosciuto mostra la homepage con l’URL corretto', async () => {
+    window.history.replaceState(null, '', '/work/progetto-inesistente')
+    render(<App />)
+
+    await waitFor(() => expect(window.location.pathname).toBe('/'))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
 })

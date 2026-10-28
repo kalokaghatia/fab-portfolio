@@ -23,7 +23,7 @@ Per i dettagli giapponesi: `font-jp` (Hiragino / Noto Sans JP di sistema).
 
 | Classe         | Dimensione                | Interlinea | Tracking | Uso                           |
 | -------------- | ------------------------- | ---------- | -------- | ----------------------------- |
-| logo `FAB.`    | `46.5vw`                  | 0.8        | −0.075em | Hero e footer, a tutta pagina |
+| logo `FAB.`    | `48.2cqw` (contenitore)   | 0.8        | −0.03em  | Hero e footer, a tutta pagina |
 | `text-display` | 60px → 224px (`clamp`)    | 0.82       | −0.06em  | Titoli di sezione             |
 | `text-title`   | 44px → 120px              | 0.9        | −0.045em | Titoli secondari              |
 | `text-lead`    | 22px → 40px               | 1.12       | −0.025em | Frasi d'apertura, email       |
@@ -44,7 +44,9 @@ dalla distanza tra `label` e `text-display`, non dal colore.
 
 ## Immagini
 
-- Formati: `portrait` 4:5 · `landscape` 3:2 · `square` 1:1 · `tall` 2:3.
+- Formati: `portrait` 4:5 · `landscape` 3:2 · `square` 1:1 · `tall` 2:3 · `slim` 3:5.
+- Le foto si importano con `?format=webp&as=img` (vedi `src/content/site.ts`): in build
+  diventano WebP senza metadati EXIF e portano con sé le dimensioni originali.
 - `MediaFrame` mostra la foto, o un segnaposto grigio con le stesse proporzioni
   ("Fig. 03 — Photo to come"), così il layout non cambia quando arrivano i file.
 
@@ -54,6 +56,12 @@ dalla distanza tra `label` e `text-display`, non dal colore.
 - Titoli che emergono da una maschera (`Reveal`), immagini in dissolvenza (`FadeIn`).
 - Hero: pila di foto sopra il logo; su desktop cambia con la posizione del mouse e segue il
   cursore, su touch scorre da sola.
-- Parallasse leggera allo scroll (logo hero, nastro Photography, kanji 日本).
-- `MotionConfig reducedMotion="user"`: con "riduci movimento" restano solo le dissolvenze
-  e la pila hero non scorre in automatico.
+- Parallasse leggera allo scroll (logo e pila foto della hero, nastro Photography, scritta WORK).
+- Con "riduci movimento" restano solo le dissolvenze:
+  - `MotionConfig reducedMotion="user"` rende istantanee le animazioni di spostamento;
+  - le parallassi restano ferme (`useReducedMotion` nei componenti) e il nastro Photography
+    si sfoglia di lato;
+  - pagina progetto e menu mobile compaiono in dissolvenza invece che a tendina;
+  - la pila hero non scorre in automatico.
+- La galleria Selected Work su desktop scorre in orizzontale anche con "riduci movimento":
+  è il modo stesso di sfogliarla.

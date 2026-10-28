@@ -4,7 +4,7 @@ import { projects, site } from '@/content/site'
 import { usePathname } from '@/hooks/usePathname'
 import { SiteFooter } from '@/layouts/SiteFooter'
 import { SiteHeader } from '@/layouts/SiteHeader'
-import { projectPath, type RouteState } from '@/lib/router'
+import { navigate, projectPath, type RouteState } from '@/lib/router'
 import { ProjectPage } from '@/pages/ProjectPage'
 import { ContactCta } from '@/sections/ContactCta'
 import { Hero } from '@/sections/Hero'
@@ -18,6 +18,11 @@ export default function App() {
   // La homepage resta sempre montata: aprendo e chiudendo un progetto non si perde la posizione.
   const activeProject = projects.find((p) => projectPath(p.slug) === pathname)
   const projectOpen = activeProject !== undefined
+
+  // Indirizzo sconosciuto (es. un progetto rimosso): si mostra la homepage, con l'URL corretto.
+  useEffect(() => {
+    if (pathname !== '/' && !projectOpen) navigate('/', {}, { replace: true })
+  }, [pathname, projectOpen])
 
   // Titolo e blocco dello scroll dipendono dal progetto attivo, non dalla singola pagina:
   // passando al progetto successivo le due pagine convivono durante l'animazione,
