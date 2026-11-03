@@ -54,7 +54,7 @@ export function Hero() {
     return () => window.clearInterval(id)
   }, [finePointer, reduceMotion, count])
 
-  // Allo scroll la tipografia si alza e la pila si allontana (non con "riduci movimento").
+  // Allo scroll la tipografia si alza e la pila si allontana.
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
@@ -67,7 +67,7 @@ export function Hero() {
       id="top"
       ref={sectionRef}
       onPointerMove={handlePointerMove}
-      className="relative flex min-h-svh flex-col overflow-hidden bg-paper px-page pt-24 pb-5 md:pt-28"
+      className="relative flex min-h-[78svh] flex-col md:min-h-svh overflow-hidden bg-paper px-page pt-24 pb-5 md:pt-28"
       aria-label="FAB. — Content Creator & Graphic Designer"
     >
       <div className="grid-page relative z-20 items-start">
@@ -106,10 +106,10 @@ export function Hero() {
 
       {/* Pila di fotografie in primo piano, sulla B di "FAB.", spostata verso destra (80% su tablet/desktop) */}
       <motion.div
-        className="pointer-events-none absolute top-[44%] left-[72.5%] z-20 md:left-[80%] w-[clamp(9rem,20vw,18rem)] -translate-x-1/2 -translate-y-1/2 lg:top-1/2"
+        className="pointer-events-none absolute bottom-[calc(1.25rem+27vw)] left-[70%] z-20 w-[40vw] md:w-[clamp(9rem,20vw,18rem)] -translate-x-1/2 md:top-[44%] md:bottom-auto md:left-[80%] md:-translate-y-1/2 lg:top-1/2"
         style={{ x: followX, y: followY }}
       >
-        <motion.div style={{ y: reduceMotion ? 0 : stackY }} className="relative">
+        <motion.div style={{ y: stackY }} className="relative">
           {heroPhotos.map((photo, i) => {
             const offset = stackOffsets[i % stackOffsets.length] ?? { rotate: 0, x: 0, y: 0 }
             const depth = (i - active + count) % count
@@ -137,7 +137,7 @@ export function Hero() {
       </motion.div>
 
       {/* Logo tipografico a tutta larghezza */}
-      <motion.div style={{ y: reduceMotion ? 0 : typeY }} className="relative z-10 mt-auto">
+      <motion.div style={{ y: typeY }} className="relative z-10 mt-auto">
         <Wordmark as="h1" animated />
       </motion.div>
     </section>

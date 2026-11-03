@@ -1,98 +1,94 @@
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
-import { useEffect, useRef, useState, type FocusEvent } from 'react'
+import { motion, useScroll, useTransform } from 'motion/react'
+import { useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent } from 'react'
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
 import { Reveal } from '@/components/Reveal'
 import { projectCategories, projects } from '@/content/site'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ease } from '@/lib/motion'
-import type { Project, ProjectCategory } from '@/types/content'
+import { inCategory, type Project, type ProjectCategory } from '@/types/content'
 import { cn } from '@/utils/cn'
 
 /*
  * Composizione a collage: ogni progetto ha larghezza, formato e altezza diversi,
  * così la galleria si legge come una pagina di rivista e non come una griglia.
- * Lo schema si ripete ogni quattro progetti. `sizes` è la larghezza massima della card,
- * per far scegliere al browser la versione dell'immagine adatta.
+ * Lo schema si ripete ogni quattro progetti.
  */
 const collage = [
-  {
-    width: 'w-[min(26vw,46vh)]',
-    sizes: '26vw',
-    aspect: 'portrait',
-    offset: '-translate-y-[7vh]',
-    tilt: -1.5,
-  },
-  {
-    width: 'w-[min(20vw,38vh)]',
-    sizes: '20vw',
-    aspect: 'tall',
-    offset: 'translate-y-[8vh]',
-    tilt: 1.5,
-  },
-  {
-    width: 'w-[min(34vw,64vh)]',
-    sizes: '34vw',
-    aspect: 'landscape',
-    offset: '-translate-y-[3vh]',
-    tilt: -1,
-  },
-  {
-    width: 'w-[min(24vw,46vh)]',
-    sizes: '24vw',
-    aspect: 'square',
-    offset: 'translate-y-[6vh]',
-    tilt: 2,
-  },
+  { offset: '-translate-y-[6vh]', tilt: -1.5 },
+  { offset: 'translate-y-[6vh]', tilt: 1.5 },
+  { offset: '-translate-y-[2vh]', tilt: -1 },
+  { offset: 'translate-y-[4vh]', tilt: 2 },
 ] as const
+
+function pad(n: number) {
+  return String(n).padStart(2, '0')
+}
 
 export function SelectedWork() {
   const [filter, setFilter] = useState<'All' | ProjectCategory>('All')
-  const visible = filter === 'All' ? projects : projects.filter((p) => p.category === filter)
+  const visible = filter === 'All' ? projects : projects.filter((p) => inCategory(p, filter))
   const desktop = useMediaQuery('(min-width: 48rem)')
 
   return (
     <section id="work" className="bg-paper py-section" aria-labelledby="work-title">
       <div className="px-page">
-        <div className="grid-page items-end gap-y-8 border-t border-ink pt-4">
-          <p className="col-span-4 label md:col-span-2">(02) Selected Work</p>
-          <h2
-            id="work-title"
-            className="col-span-4 text-display font-extrabold uppercase md:col-span-6 lg:col-span-12"
-          >
+        <div className="flex items-baseline justify-between border-t border-ink pt-4 label">
+          <span>(02) Selected Work</span>
+          <span className="text-grey-500">{pad(projects.length)} projects</span>
+        </div>
+
+        {/*
+          Titolo e filtri in un'unica composizione: "WORK" è allineato a destra e nello
+          spazio libero alla sua sinistra c'è l'indice delle categorie, con il numero di progetti.
+        */}
+        <div className="relative z-10 mt-6 md:mt-8">
+          <h2 id="work-title" className="text-display font-extrabold uppercase">
             <Reveal>Selected</Reveal>
             <Reveal delay={0.08} className="text-right">
               Work
             </Reveal>
           </h2>
-        </div>
 
-        <div
-          className="mt-10 flex flex-wrap gap-x-5 gap-y-2 label md:mt-14"
-          role="group"
-          aria-label="Filter by category"
-        >
-          {projectCategories.map((category) => (
-            <button
-              key={category}
-              type="button"
-              aria-pressed={filter === category}
-              onClick={() => setFilter(category)}
-              className={cn(
-                'relative transition-colors duration-300',
-                filter === category ? 'text-ink' : 'text-grey-500 hover:text-ink',
-              )}
-            >
-              {category}
-              <span
-                aria-hidden
-                className={cn(
-                  'absolute -bottom-1 left-0 h-px w-full origin-left bg-current transition-transform duration-500 ease-editorial',
-                  filter === category ? 'scale-x-100' : 'scale-x-0',
-                )}
-              />
-            </button>
-          ))}
+          <div
+            role="group"
+            aria-label="Filtra per categoria"
+            className="mt-8 flex flex-wrap gap-x-5 gap-y-1 md:absolute md:bottom-[0.4rem] md:left-0 md:mt-0 md:grid md:grid-cols-2 md:gap-x-8 lg:flex lg:flex-col"
+          >
+            {projectCategories.map((category) => {
+              const count =
+                category === 'All'
+                  ? projects.length
+                  : projects.filter((p) => inCategory(p, category)).length
+              const active = filter === category
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setFilter(category)}
+                  className={cn(
+                    'group flex items-start text-left text-[clamp(1rem,0.85rem+0.5vw,1.375rem)] leading-tight font-semibold tracking-[-0.02em] uppercase transition-colors duration-300',
+                    active ? 'text-ink' : 'text-grey-400 hover:text-ink',
+                  )}
+                >
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'w-0 shrink-0 overflow-hidden whitespace-nowrap transition-[width] duration-500 ease-editorial',
+                      active ? 'w-[1.4em]' : 'group-hover:w-[1.4em]',
+                    )}
+                  >
+                    →
+                  </span>
+                  {category}
+                  <span aria-hidden className="mt-[0.15em] ml-1.5 label">
+                    {pad(count)}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -108,94 +104,137 @@ export function SelectedWork() {
 }
 
 /**
- * Desktop: la galleria si aggancia allo schermo e, scorrendo in verticale,
- * i progetti sfilano in orizzontale. Dietro, la parola WORK in nero scorre più lenta.
+ * Desktop: una fila di progetti che si scorre in autonomia, senza bloccare la pagina.
+ * Si può trascinare con il mouse, scorrere di lato con il trackpad, usare le frecce
+ * o trascinare la barra in basso. Dietro, la parola WORK in nero scorre più lenta.
  */
 function HorizontalGallery({ projects }: { projects: Project[] }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLUListElement>(null)
-  const [distance, setDistance] = useState(0)
-  const reduceMotion = useReducedMotion()
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const barRef = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(1)
+  const drag = useRef({ active: false, moved: false, startX: 0, startLeft: 0 })
 
-  // Quanto deve spostarsi il nastro: la sua larghezza meno quella dello schermo.
-  // Si misura dopo il primo disegno (useEffect, non useLayoutEffect): leggere scrollWidth
-  // subito dopo il montaggio costringeva il browser a calcolare in anticipo il layout di
-  // tutta la pagina. La galleria è sotto la piega, quindi l'aggiustamento non si vede.
-  useEffect(() => {
+  const { scrollXProgress } = useScroll({ container: scrollerRef })
+  const wordX = useTransform(scrollXProgress, [0, 1], ['5%', '-35%'])
+  const thumbLeft = useTransform(scrollXProgress, (p) => `${p * (1 - visible) * 100}%`)
+
+  // Quanta parte della fila è visibile: decide la larghezza del cursore della barra.
+  useLayoutEffect(() => {
     const measure = () => {
-      const track = trackRef.current
-      if (track) setDistance(Math.max(0, track.scrollWidth - window.innerWidth))
+      const el = scrollerRef.current
+      if (el) setVisible(Math.min(1, el.clientWidth / el.scrollWidth))
     }
     measure()
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
   }, [projects])
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  })
-  const x = useTransform(scrollYProgress, [0, 1], [0, -distance])
-  const wordX = useTransform(scrollYProgress, [0, 1], ['5%', '-35%'])
+  const step = (direction: 1 | -1) => {
+    const el = scrollerRef.current
+    el?.scrollBy({ left: direction * el.clientWidth * 0.7, behavior: 'smooth' })
+  }
 
-  // Tastiera: il nastro si muove solo con lo scroll verticale, quindi il Tab su una card
-  // fuori schermo porta la pagina al punto in cui quella card arriva al centro.
-  const handleFocus = (event: FocusEvent<HTMLUListElement>) => {
-    const container = containerRef.current
-    const card = event.target.closest('li')
-    if (!container || !card || !event.target.matches(':focus-visible')) return
-    const rect = card.getBoundingClientRect()
-    const visible =
-      rect.left >= 0 &&
-      rect.right <= window.innerWidth &&
-      rect.top >= 0 &&
-      rect.bottom <= window.innerHeight
-    if (visible) return
-    const shift = Math.min(
-      distance,
-      Math.max(0, card.offsetLeft + card.offsetWidth / 2 - window.innerWidth / 2),
-    )
-    const range = container.offsetHeight - window.innerHeight
-    const top = container.getBoundingClientRect().top + window.scrollY
-    window.scrollTo({ top: top + (distance > 0 ? (shift / distance) * range : 0) })
+  // Trascinamento con il mouse; se il puntatore si è mosso, il click non apre il progetto.
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'mouse' || !scrollerRef.current) return
+    drag.current = {
+      active: true,
+      moved: false,
+      startX: event.clientX,
+      startLeft: scrollerRef.current.scrollLeft,
+    }
+  }
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const el = scrollerRef.current
+    if (!drag.current.active || !el) return
+    const dx = event.clientX - drag.current.startX
+    if (Math.abs(dx) > 5) drag.current.moved = true
+    el.scrollLeft = drag.current.startLeft - dx
+  }
+  const endDrag = () => {
+    drag.current.active = false
+  }
+  const onClickCapture = (event: MouseEvent<HTMLDivElement>) => {
+    if (drag.current.moved) {
+      event.preventDefault()
+      event.stopPropagation()
+      drag.current.moved = false
+    }
+  }
+
+  // Barra: cliccando o trascinando sul binario la fila si sposta in quel punto.
+  const seek = (clientX: number) => {
+    const el = scrollerRef.current
+    const bar = barRef.current?.getBoundingClientRect()
+    if (!el || !bar) return
+    const ratio = Math.min(1, Math.max(0, (clientX - bar.left) / bar.width))
+    el.scrollLeft = ratio * (el.scrollWidth - el.clientWidth)
+  }
+  const onBarDown = (event: PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId)
+    seek(event.clientX)
+  }
+  const onBarMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) seek(event.clientX)
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="relative mt-10"
-      style={{ height: `calc(100svh + ${distance}px)` }}
-    >
-      {/* overflow-clip, non hidden: il browser non può scorrerlo di lato quando una card riceve il focus */}
-      <div className="sticky top-0 flex h-svh items-center overflow-clip">
-        {/* Parallasse decorativa, ferma con "riduci movimento". Il nastro dei progetti invece si muove
-            comunque: è il modo stesso di sfogliarli. */}
-        <motion.p
-          aria-hidden
-          style={{ x: reduceMotion ? '5%' : wordX }}
-          className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-[38vw] leading-none font-extrabold tracking-[-0.05em] whitespace-nowrap text-ink uppercase select-none"
-        >
-          Work — Work
-        </motion.p>
+    <div className="relative -mt-12 h-[min(100svh,56rem)] overflow-hidden">
+      <motion.p
+        aria-hidden
+        style={{ x: wordX }}
+        className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-[38vw] leading-none font-extrabold tracking-[-0.05em] whitespace-nowrap text-ink uppercase select-none"
+      >
+        Work<span className="ml-[0.35em]">Work</span>
+      </motion.p>
 
-        <motion.ul
-          ref={trackRef}
-          style={{ x }}
-          onFocus={handleFocus}
-          className="relative flex items-center gap-[7vw] pr-[12vw] pl-[10vw]"
-        >
+      <div
+        ref={scrollerRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        onClickCapture={onClickCapture}
+        onDragStart={(event) => event.preventDefault()}
+        className="relative flex h-full cursor-grab items-center overflow-x-auto overscroll-x-contain select-none active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <ul className="flex shrink-0 items-center gap-[7vw] pr-[12vw] pl-[10vw]">
           {projects.map((project, i) => (
             <CollageCard key={project.slug} project={project} index={i} />
           ))}
-        </motion.ul>
+        </ul>
+      </div>
 
-        {/* Barra di avanzamento */}
-        <div className="absolute inset-x-0 bottom-6 flex items-center gap-4 px-page label">
-          <span>Scroll</span>
-          <div className="h-px flex-1 bg-grey-200">
-            <motion.div className="h-full origin-left bg-ink" style={{ scaleX: scrollYProgress }} />
-          </div>
-          <span aria-hidden>→</span>
+      {/* Comandi: frecce e barra trascinabile */}
+      <div className="absolute inset-x-0 bottom-6 flex items-center gap-5 px-page label">
+        <span className="hidden lg:inline">Drag or scroll</span>
+        <div
+          ref={barRef}
+          role="group"
+          aria-label="Projects"
+          onPointerDown={onBarDown}
+          onPointerMove={onBarMove}
+          className="relative flex h-6 flex-1 cursor-pointer items-center touch-none"
+        >
+          <span aria-hidden className="h-px w-full bg-grey-300" />
+          <motion.span
+            aria-hidden
+            className="absolute h-[3px] rounded-full bg-ink"
+            style={{ left: thumbLeft, width: `${visible * 100}%` }}
+          />
+        </div>
+        <div className="flex gap-2">
+          {([-1, 1] as const).map((direction) => (
+            <button
+              key={direction}
+              type="button"
+              onClick={() => step(direction)}
+              aria-label={direction === -1 ? 'Previous projects' : 'Next projects'}
+              className="grid size-11 place-items-center rounded-full border border-ink bg-paper text-base transition-colors duration-300 hover:bg-ink hover:text-paper"
+            >
+              {direction === -1 ? '←' : '→'}
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -206,10 +245,10 @@ function CollageCard({ project, index }: { project: Project; index: number }) {
   const slot = collage[index % collage.length] ?? collage[0]
 
   return (
-    <li className={cn('shrink-0', slot.width, slot.offset)}>
+    <li className={cn('w-[min(24vw,46vh)] shrink-0', slot.offset)}>
       <ProjectLink
         slug={project.slug}
-        aria-label={`${project.title} — ${project.category}, ${project.year}`}
+        aria-label={`${project.title} — ${project.discipline}`}
         className="group block"
       >
         <motion.div
@@ -226,18 +265,19 @@ function CollageCard({ project, index }: { project: Project; index: number }) {
         >
           {/* Foto sempre centrata nella cornice; al passaggio del mouse si avvicina appena */}
           <div className="transition-transform duration-1000 ease-editorial group-hover:scale-[1.04]">
-            <MediaFrame media={{ ...project.cover, aspect: slot.aspect }} sizes={slot.sizes} />
+            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} />
           </div>
         </motion.div>
         {/* Didascalia su fondo carta: leggibile anche sopra la scritta WORK nera */}
         <div className="mt-4 flex flex-col items-start gap-1">
           <span className="bg-paper px-2 py-1 text-[clamp(1.25rem,0.8rem+1.2vw,2.25rem)] leading-none font-bold tracking-[-0.04em] uppercase">
-            <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_2px] bg-bottom-left bg-no-repeat pb-1 transition-[background-size] duration-500 ease-editorial group-hover:bg-[length:100%_2px]">
+            {/* inline-block: se il titolo va a capo, la linea compare solo sotto l'ultima riga */}
+            <span className="inline-block bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_2px] bg-bottom-left bg-no-repeat pb-1 transition-[background-size] duration-500 ease-editorial group-hover:bg-[length:100%_2px]">
               {project.title}
             </span>
           </span>
           <span className="bg-paper px-2 py-1 label text-grey-500">
-            {project.category} — {project.year}
+            {pad(index + 1)} — {project.discipline}
           </span>
         </div>
       </ProjectLink>
@@ -253,16 +293,14 @@ function SwipeGallery({ projects }: { projects: Project[] }) {
         <li key={project.slug} className="w-[78vw] shrink-0 snap-center">
           <ProjectLink
             slug={project.slug}
-            aria-label={`${project.title} — ${project.category}, ${project.year}`}
+            aria-label={`${project.title} — ${project.discipline}`}
             className="block"
           >
-            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} sizes="78vw" />
+            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} />
             <p className="mt-3 text-lead leading-none font-bold tracking-[-0.04em] uppercase">
               {project.title}
             </p>
-            <p className="mt-2 label text-grey-500">
-              {project.category} — {project.year}
-            </p>
+            <p className="mt-2 label text-grey-500">{project.discipline}</p>
           </ProjectLink>
         </li>
       ))}

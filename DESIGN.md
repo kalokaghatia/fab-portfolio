@@ -12,15 +12,8 @@ Rigorosamente bianco e nero, con grigi neutri (nessuna tinta). Token in `src/sty
 | `paper`        | `#f5f5f4` | Fondo principale (bianco carta, non ottico) |
 | `grey-100…900` | neutri    | Linee, testi secondari, segnaposto foto     |
 
-Testo secondario, tarato sul contrasto minimo WCAG:
-
-- su `paper`: `grey-500` per il testo piccolo (4.6:1); `grey-400` solo per il testo grande (3.1:1);
-- su `ink`: `grey-400` (5.8:1). Il `grey-500` sul nero non basta.
-
 Le sezioni alternano chiaro/scuro: Hero, About e Work su `paper`; Photography su `ink`; Japan su `paper`; Contact e footer su `ink`.
-L'header usa `mix-blend-difference`, quindi resta leggibile su entrambi i fondi. Il colore
-dichiarato è `ink` invertito da un filtro: a schermo è identico al bianco, ma gli strumenti
-di accessibilità (che non calcolano le fusioni) leggono il contrasto reale.
+L'header usa `mix-blend-difference`, quindi resta leggibile su entrambi i fondi.
 
 ## Tipografia
 
@@ -30,7 +23,7 @@ Per i dettagli giapponesi: `font-jp` (Hiragino / Noto Sans JP di sistema).
 
 | Classe         | Dimensione                | Interlinea | Tracking | Uso                           |
 | -------------- | ------------------------- | ---------- | -------- | ----------------------------- |
-| logo `FAB.`    | `48.2cqw` (contenitore)   | 0.8        | −0.03em  | Hero e footer, a tutta pagina |
+| logo `FAB.`    | `46.5vw`                  | 0.8        | −0.075em | Hero e footer, a tutta pagina |
 | `text-display` | 60px → 224px (`clamp`)    | 0.82       | −0.06em  | Titoli di sezione             |
 | `text-title`   | 44px → 120px              | 0.9        | −0.045em | Titoli secondari              |
 | `text-lead`    | 22px → 40px               | 1.12       | −0.025em | Frasi d'apertura, email       |
@@ -51,11 +44,7 @@ dalla distanza tra `label` e `text-display`, non dal colore.
 
 ## Immagini
 
-- Formati: `portrait` 4:5 · `landscape` 3:2 · `square` 1:1 · `tall` 2:3 · `slim` 3:5.
-- Le foto si importano con `?responsive` (vedi `src/content/site.ts`): in build diventano
-  WebP senza metadati EXIF in più larghezze, e portano con sé le dimensioni originali.
-  Dove si mostrano, `sizes` dice al browser quanto spazio occupano, così scarica la
-  versione più leggera che basta.
+- Formati: `portrait` 4:5 · `landscape` 3:2 · `square` 1:1 · `tall` 2:3.
 - `MediaFrame` mostra la foto, o un segnaposto grigio con le stesse proporzioni
   ("Fig. 03 — Photo to come"), così il layout non cambia quando arrivano i file.
 
@@ -65,12 +54,6 @@ dalla distanza tra `label` e `text-display`, non dal colore.
 - Titoli che emergono da una maschera (`Reveal`), immagini in dissolvenza (`FadeIn`).
 - Hero: pila di foto sopra il logo; su desktop cambia con la posizione del mouse e segue il
   cursore, su touch scorre da sola.
-- Parallasse leggera allo scroll (logo e pila foto della hero, nastro Photography, scritta WORK).
-- Con "riduci movimento" restano solo le dissolvenze:
-  - `MotionConfig reducedMotion="user"` rende istantanee le animazioni di spostamento;
-  - le parallassi restano ferme (`useReducedMotion` nei componenti) e il nastro Photography
-    si sfoglia di lato;
-  - pagina progetto e menu mobile compaiono in dissolvenza invece che a tendina;
-  - la pila hero non scorre in automatico.
-- La galleria Selected Work su desktop scorre in orizzontale anche con "riduci movimento":
-  è il modo stesso di sfogliarla.
+- Parallasse leggera allo scroll (logo hero, nastro Photography, kanji 日本).
+- `MotionConfig reducedMotion="user"`: con "riduci movimento" restano solo le dissolvenze
+  e la pila hero non scorre in automatico.

@@ -1,117 +1,153 @@
+import { PageLink } from '@/components/PageLink'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { RevealImage } from '@/components/RevealImage'
-import { journalEntries } from '@/content/site'
-import type { JournalEntry } from '@/types/content'
+import { japanJournal } from '@/content/site'
+import { cityPath, japanPath } from '@/lib/router'
+import { cn } from '@/utils/cn'
+
+function pad(n: number) {
+  return String(n).padStart(2, '0')
+}
 
 function entryNumber(i: number) {
   return `No. ${String(i + 1).padStart(2, '0')}`
 }
 
-function Caption({ entry, i }: { entry: JournalEntry; i: number }) {
+function Caption({ label, i }: { label: string; i: number }) {
   return (
-    <FadeIn delay={0.3} className="mt-3 grid grid-cols-[auto_1fr_auto] gap-3 label">
+    <FadeIn delay={0.3} className="mt-3 flex justify-between gap-3 label">
       <span className="text-grey-500">{entryNumber(i)}</span>
-      <span>
-        {entry.city} — {entry.title}
-      </span>
-      <span className="text-grey-500">{entry.date}</span>
+      <span>{label}</span>
     </FadeIn>
   )
 }
 
 /**
- * Japan Journal: impaginato come una rivista, a griglia ordinata.
+ * Japan Journal in homepage: impaginato come una rivista, a griglia ordinata.
  * Riga 1: copertina a tutta larghezza con il titolo sovrapposto.
- * Riga 2: scheda di testo + due foto verticali della stessa altezza.
+ * Riga 2: manifesto con le tappe del viaggio e, accanto, quattro foto (due sopra e due sotto)
+ * allineate esattamente al bordo superiore e inferiore del manifesto.
+ * Ogni elemento apre la pagina completa del journal.
  */
 export function JapanTeaser() {
-  const [cover, ...entries] = journalEntries
+  const { cover, cities, diary } = japanJournal
 
   return (
     <section id="japan" className="bg-paper px-page py-section" aria-labelledby="japan-title">
       <div className="flex items-baseline justify-between border-b border-ink pb-3 label">
         <span>(04) Journal</span>
         <span className="text-grey-500">
-          Vol. 01 — {String(journalEntries.length).padStart(2, '0')} entries
+          Vol. 01 — {String(cities.length).padStart(2, '0')} cities
         </span>
       </div>
 
-      {cover && (
-        <a href="#japan" className="mt-2 block" aria-label={`${cover.city} — ${cover.title}`}>
-          <div className="relative">
-            <RevealImage
-              media={cover.cover}
-              fill
-              sizes="100vw"
-              className="aspect-[4/5] md:aspect-[16/8] lg:aspect-[16/7]"
-            />
-            {/* Titolo sovrapposto alla copertina */}
-            <div className="pointer-events-none absolute inset-0 flex flex-col justify-between bg-linear-to-t from-ink/55 via-transparent to-ink/30 p-4 text-paper md:p-6">
-              <div className="flex justify-between label">
-                <span>{entryNumber(0)}</span>
-                <span>Cover story</span>
-              </div>
-              <h2 id="japan-title" className="text-display font-extrabold uppercase">
-                <Reveal delay={0.4}>Japan</Reveal>
-                <Reveal delay={0.5}>Journal</Reveal>
-              </h2>
+      <PageLink to={japanPath} className="mt-2 block" aria-label="Open the Japan Journal">
+        <div className="relative">
+          <RevealImage
+            media={cover}
+            fill
+            className="aspect-[4/5] md:aspect-[16/8] lg:aspect-[16/7]"
+          />
+          {/* Titolo sovrapposto alla copertina */}
+          <div className="pointer-events-none absolute inset-0 flex flex-col justify-between bg-linear-to-t from-ink/55 via-transparent to-ink/30 p-4 text-paper md:p-6">
+            <div className="flex justify-between label">
+              <span>{entryNumber(0)}</span>
+              <span>Cover story</span>
             </div>
+            <h2 id="japan-title" className="text-display font-extrabold uppercase md:text-right">
+              <Reveal delay={0.4}>Japan</Reveal>
+              <Reveal delay={0.5}>Journal</Reveal>
+            </h2>
           </div>
-          <Caption entry={cover} i={0} />
-        </a>
-      )}
+        </div>
+        <Caption label={cities.map((city) => city.name).join(' · ')} i={0} />
+      </PageLink>
 
-      <div className="mt-2 grid-page gap-y-10 md:mt-6 md:gap-y-2">
-        {/* Scheda editoriale, alta quanto le foto accanto */}
-        <FadeIn className="col-span-4 flex flex-col justify-between gap-12 border border-grey-200 bg-white p-5 md:col-span-6 lg:col-span-4">
-          <div className="flex items-start justify-between">
-            <p className="label">A visual diary</p>
-            <p lang="ja" aria-hidden className="font-jp text-title leading-none font-bold">
-              日本
-            </p>
-          </div>
-          <div>
-            <p className="max-w-[24ch] text-lead font-medium">
-              Streets, details, quiet places and everyday life — Japan through my eyes.
-            </p>
-            <ul className="mt-8 border-t border-grey-200 label">
-              {journalEntries.map((entry, i) => (
-                <li
-                  key={entry.slug}
-                  className="flex justify-between gap-3 border-b border-grey-200 py-2"
-                >
-                  <span className="text-grey-500">{entryNumber(i)}</span>
-                  <span className="flex-1">{entry.city}</span>
-                  <span className="text-grey-500">{entry.date}</span>
+      {/* Stessa distanza tra righe e colonne: la griglia di foto resta regolare */}
+      <div className="mt-2 grid-page gap-y-[clamp(0.75rem,0.5rem+0.8vw,1.5rem)] md:mt-6">
+        {/*
+          "A visual diary": le tappe come un manifesto tipografico in negativo. Su computer occupa
+          due righe, così è alto esattamente quanto le quattro foto accanto. Nomi grandi alternati bianco/grigio; al passaggio del mouse
+          la città indicata resta bianca e le altre si spengono.
+        */}
+        <FadeIn className="col-span-4 md:col-span-6 lg:col-span-4 lg:row-span-2">
+          <div className="group/card flex h-full flex-col justify-between gap-10 bg-ink p-5 text-paper md:p-6">
+            <span className="flex items-baseline justify-between label">
+              <span>A visual diary</span>
+              <span lang="ja" aria-hidden className="font-jp text-grey-400">
+                日本
+              </span>
+            </span>
+
+            <ol className="group/list">
+              {cities.map((city, i) => (
+                <li key={city.slug}>
+                  {/* Ogni città porta direttamente alla sua tappa nel journal */}
+                  <PageLink
+                    to={cityPath(city.slug)}
+                    aria-label={`${city.name} — Japan Journal`}
+                    className={cn(
+                      'flex items-start justify-between gap-3 transition-colors duration-500 group-hover/list:text-grey-600 hover:!text-paper',
+                      i % 2 === 1 && 'text-grey-500',
+                    )}
+                  >
+                    <span className="flex items-start gap-2">
+                      <span className="mt-[0.5em] label text-grey-500">{pad(i + 1)}</span>
+                      <Reveal
+                        delay={0.08 * i}
+                        className="text-[clamp(2.25rem,1.2rem+3vw,3.75rem)] leading-[0.9] font-extrabold tracking-[-0.045em] uppercase"
+                      >
+                        {city.name}
+                      </Reveal>
+                    </span>
+                    <span lang="ja" aria-hidden className="mt-[0.4em] font-jp text-sm">
+                      {city.kanji}
+                    </span>
+                  </PageLink>
                 </li>
               ))}
-            </ul>
-            <a
-              href="#japan"
-              className="group mt-6 inline-flex items-center gap-2 border-b border-ink pb-1 label"
-            >
-              Open the journal
-              <span className="transition-transform duration-500 ease-editorial group-hover:translate-x-1">
-                →
+            </ol>
+
+            <span className="flex flex-wrap items-center justify-between gap-4 border-t border-paper/20 pt-4 label">
+              <span className="flex items-center gap-2 text-grey-400">
+                <span
+                  aria-hidden
+                  className="size-2 rounded-full bg-paper motion-safe:animate-pulse"
+                />
+                Stay tuned — next trip
               </span>
-            </a>
+              <PageLink
+                to={japanPath}
+                className="group/open inline-flex items-center gap-2 border-b border-paper pb-1"
+              >
+                Open the journal
+                <span className="transition-transform duration-500 ease-editorial group-hover/open:translate-x-1">
+                  →
+                </span>
+              </PageLink>
+            </span>
           </div>
         </FadeIn>
 
-        {entries.map((entry, i) => (
-          <a
-            key={entry.slug}
-            href="#japan"
-            className="col-span-4 block md:col-span-3 lg:col-span-4"
-            aria-label={`${entry.city} — ${entry.title}`}
+        {/* Foto a riquadro fisso, didascalia sopra l'immagine: nessuna riga di testo sporge dal margine */}
+        {diary.map(({ slug, label, photo }, i) => (
+          <PageLink
+            key={label}
+            to={cityPath(slug)}
+            className="relative col-span-2 block md:col-span-3 lg:col-span-4"
+            aria-label={`${label} — Japan Journal`}
           >
             <RevealImage
-              media={entry.cover}
-              delay={0.12 * (i + 1)}
-              sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
+              media={photo}
+              fill
+              delay={0.1 * (i + 1)}
+              className="aspect-[4/5] lg:aspect-[4/3]"
             />
-            <Caption entry={entry} i={i + 1} />
-          </a>
+            <span className="pointer-events-none absolute bottom-2 left-2 flex gap-3 bg-paper px-2 py-1 label">
+              <span className="text-grey-500">{entryNumber(i + 1)}</span>
+              <span>{label}</span>
+            </span>
+          </PageLink>
         ))}
       </div>
     </section>

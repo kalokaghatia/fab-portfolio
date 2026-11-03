@@ -6,6 +6,11 @@
 export interface RouteState {
   /** true se la pagina è stata aperta da un click dentro il sito. */
   fromSite?: boolean
+  /**
+   * Quante pagine (progetti, journal) sono state aperte una sopra l'altra a partire
+   * dalla homepage: Close torna indietro di tutte in un colpo solo.
+   */
+  depth?: number
 }
 
 const listeners = new Set<() => void>()
@@ -19,14 +24,25 @@ export function subscribeToRoute(onChange: () => void) {
   }
 }
 
-/** Con `replace` la nuova pagina prende il posto di quella corrente nella cronologia. */
-export function navigate(to: string, state: RouteState = {}, { replace = false } = {}) {
-  if (to === window.location.pathname) return
-  if (replace) window.history.replaceState(state, '', to)
-  else window.history.pushState(state, '', to)
+export function navigate(to: string, state: RouteState = {}) {
+  if (to === window.location.pathname + window.location.hash) return
+  const current = window.history.state as RouteState | null
+  const depth = state.fromSite
+    ? window.location.pathname === '/'
+      ? 1
+      : (current?.depth ?? 0) + 1
+    : 0
+  window.history.pushState({ ...state, depth }, '', to)
   listeners.forEach((listener) => listener())
 }
 
 export function projectPath(slug: string) {
   return `/work/${slug}`
+}
+
+export const japanPath = '/japan'
+
+/** Indirizzo di una tappa del Japan Journal, es. /japan#kyoto */
+export function cityPath(slug: string) {
+  return `${japanPath}#${slug}`
 }

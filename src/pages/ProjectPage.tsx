@@ -1,181 +1,219 @@
-import { motion, useIsPresent, useReducedMotion } from 'motion/react'
-import { useEffect } from 'react'
+import { motion } from 'motion/react'
 import { MediaFrame } from '@/components/MediaFrame'
+import { Overlay } from '@/components/Overlay'
 import { ProjectLink } from '@/components/ProjectLink'
-import { Reveal } from '@/components/Reveal'
+import { FadeIn, Reveal } from '@/components/Reveal'
 import { projects, site } from '@/content/site'
 import { ease } from '@/lib/motion'
-import { navigate, type RouteState } from '@/lib/router'
 import type { Media, Project } from '@/types/content'
 import { cn } from '@/utils/cn'
 
-/**
- * Torna alla homepage: con "Indietro" se la pagina è stata aperta dal sito,
- * altrimenti (link diretto) con una nuova navigazione.
- */
-function closeProject() {
-  const state = window.history.state as RouteState | null
-  if (state?.fromSite) window.history.back()
-  else navigate('/')
+function pad(n: number) {
+  return String(n).padStart(2, '0')
 }
 
 /**
  * Pagina di un progetto, aperta sopra la homepage come un foglio che sale.
- * Le immagini sono mostrate intere, senza ritagli, nel loro formato originale.
- * Titolo della scheda e blocco dello scroll sono gestiti da App.
+ * Si legge come un articolo di rivista: titolo e sottotitolo, la copertina in scena
+ * davanti al numero del progetto, la scheda tecnica e il racconto, poi le immagini.
  */
 export function ProjectPage({ project }: { project: Project }) {
-  const isPresent = useIsPresent()
-  const reduceMotion = useReducedMotion()
-  const images = [project.cover, ...(project.gallery ?? [])]
   const position = projects.findIndex((p) => p.slug === project.slug)
   const next = projects[(position + 1) % projects.length]
   const details = [
-    { label: 'Client', value: project.client },
-    { label: 'Role', value: project.role },
-    { label: 'Year', value: project.year },
+    { label: 'Discipline', value: project.discipline },
+    { label: 'Context', value: project.context },
+    { label: 'Deliverables', value: project.deliverables },
+    { label: 'Credits', value: project.credits },
   ].filter((d): d is { label: string; value: string } => Boolean(d.value))
-
-  // Esc chiude solo la pagina attiva, non quella che sta uscendo dopo "Next project".
-  useEffect(() => {
-    if (!isPresent) return
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeProject()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [isPresent])
+  const [lead, ...paragraphs] = project.description
 
   return (
-    <motion.div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="project-title"
-      className="fixed inset-0 z-50 overflow-y-auto bg-paper"
-      // Con "riduci movimento" la pagina compare in dissolvenza invece di salire come un foglio.
-      initial={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(100% 0% 0% 0%)' }}
-      animate={reduceMotion ? { opacity: 1 } : { clipPath: 'inset(0% 0% 0% 0%)' }}
-      exit={reduceMotion ? { opacity: 0 } : { clipPath: 'inset(0% 0% 100% 0%)' }}
-      transition={{ duration: 0.8, ease }}
-    >
-      <div className="sticky top-0 z-10 flex items-center justify-between bg-paper/90 px-page py-4 backdrop-blur-sm">
-        <span className="text-xl leading-none font-extrabold tracking-[-0.05em]">{site.name}</span>
-        <button
-          type="button"
-          onClick={closeProject}
-          className="group flex items-center gap-2 label"
-          autoFocus
-        >
-          Close
-          <span
-            aria-hidden
-            className="text-base transition-transform duration-500 ease-editorial group-hover:rotate-90"
-          >
-            ✕
-          </span>
-        </button>
-      </div>
-
-      <article className="px-page pb-section">
-        <header className="mt-6 border-t border-ink pt-4">
-          <div className="flex items-baseline justify-between label">
-            <span>{project.category}</span>
-            <span className="text-grey-500">Selected Work</span>
+    <Overlay title={`${project.title} — ${site.name}`} labelledBy="project-title">
+      <article className="pb-section">
+        <header className="px-page">
+          <div className="mt-6 flex items-baseline justify-between border-t border-ink pt-4 label">
+            <span>
+              Project {pad(position + 1)} / {pad(projects.length)}
+            </span>
+            <span className="text-grey-500">{project.discipline}</span>
           </div>
-          <h1 id="project-title" className="mt-10 text-title font-extrabold uppercase md:mt-16">
-            <Reveal delay={0.4}>{project.title}</Reveal>
+          <h1
+            id="project-title"
+            className="mt-10 text-[12.5vw] leading-[0.85] font-extrabold tracking-[-0.05em] uppercase md:mt-14 md:text-display"
+          >
+            <Reveal delay={0.35}>{project.title}</Reveal>
           </h1>
+          <FadeIn
+            delay={0.55}
+            className="mt-6 max-w-[30ch] text-[clamp(1.25rem,0.9rem+1.2vw,2rem)] leading-tight font-medium tracking-[-0.02em] text-grey-600 md:mt-8"
+          >
+            {project.subtitle}
+          </FadeIn>
+        </header>
 
-          <div className="mt-10 grid-page gap-y-8 md:mt-14">
-            <dl className="col-span-4 md:col-span-3 lg:col-span-4">
+        <CoverStage project={project} number={pad(position + 1)} />
+
+        {/* Scheda tecnica a sinistra, racconto a destra */}
+        <section
+          aria-label="About the project"
+          className="mt-16 grid-page gap-y-12 px-page md:mt-24"
+        >
+          <FadeIn className="col-span-4 md:col-span-2 lg:col-span-4">
+            <p className="label text-grey-500">(About)</p>
+            <dl className="mt-6 border-t border-ink">
               {details.map((detail) => (
-                <div
-                  key={detail.label}
-                  className="flex justify-between gap-4 border-b border-grey-200 py-2"
-                >
+                <div key={detail.label} className="border-b border-grey-200 py-3">
                   <dt className="label text-grey-500">{detail.label}</dt>
-                  <dd className="label">{detail.value}</dd>
+                  <dd className="mt-1 font-medium">{detail.value}</dd>
                 </div>
               ))}
             </dl>
-            {project.description && (
-              <p className="col-span-4 max-w-[34ch] text-lead font-medium md:col-span-3 lg:col-span-6 lg:col-start-7">
-                {project.description}
-              </p>
+            {project.link && (
+              <a
+                href={project.link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="group mt-8 inline-flex items-center gap-2 border-b border-ink pb-1 label"
+              >
+                {project.link.label}
+                <span
+                  aria-hidden
+                  className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                >
+                  ↗
+                </span>
+              </a>
             )}
-          </div>
-        </header>
+          </FadeIn>
 
-        {/* Galleria: immagini intere, due per riga; se sono dispari l'ultima va al centro */}
-        <ul className="mt-14 grid gap-4 md:mt-20 md:grid-cols-2 md:gap-6">
-          {images.map((media, i) => (
-            <li
-              key={`${media.alt}-${i}`}
-              className={cn(
-                images.length % 2 === 1 &&
-                  i === images.length - 1 &&
-                  'md:col-span-2 md:mx-auto md:w-[calc(50%-0.75rem)]',
-              )}
-            >
-              <ProjectImage media={media} index={i} />
-            </li>
-          ))}
-        </ul>
+          <div className="col-span-4 md:col-span-4 lg:col-span-7 lg:col-start-6">
+            {lead && (
+              <FadeIn className="text-[clamp(1.5rem,1rem+1.6vw,2.75rem)] leading-[1.1] font-semibold tracking-[-0.03em]">
+                {lead}
+              </FadeIn>
+            )}
+            {paragraphs.map((paragraph) => (
+              <FadeIn key={paragraph} className="mt-8 max-w-[52ch] text-body text-grey-700">
+                {paragraph}
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+
+        {/*
+          Galleria: immagini intere, due per riga; se sono dispari l'ultima va al centro.
+          Le immagini "wide" occupano invece tutta la riga.
+        */}
+        {project.gallery && project.gallery.length > 0 && (
+          <ul className="mt-section grid gap-4 px-page md:grid-cols-2 md:gap-6">
+            {project.gallery.map((media, i, all) => (
+              <li
+                key={`${media.alt}-${i}`}
+                className={cn(
+                  media.wide
+                    ? 'md:col-span-2'
+                    : all.length % 2 === 1 &&
+                        i === all.length - 1 &&
+                        'md:col-span-2 md:mx-auto md:w-[calc(50%-0.75rem)]',
+                )}
+              >
+                <GalleryImage media={media} index={i} />
+              </li>
+            ))}
+          </ul>
+        )}
 
         {next && next.slug !== project.slug && (
-          <ProjectLink
-            slug={next.slug}
-            replace
-            className="group mt-section block border-t border-ink pt-4"
-            aria-label={`Next project: ${next.title}`}
-          >
-            <span className="flex justify-between label">
-              <span>Next project</span>
-              <span className="text-grey-500">{next.category}</span>
-            </span>
-            <span className="mt-6 flex items-end justify-between gap-6 text-title font-extrabold uppercase">
-              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_3px] bg-bottom-left bg-no-repeat transition-[background-size] duration-700 ease-editorial group-hover:bg-[length:100%_3px]">
-                {next.title}
+          <div className="px-page">
+            <ProjectLink
+              slug={next.slug}
+              className="group mt-section block border-t border-ink pt-4"
+              aria-label={`Next project: ${next.title}`}
+            >
+              <span className="flex justify-between label">
+                <span>Next project</span>
+                <span className="text-grey-500">{next.discipline}</span>
               </span>
-              <span
-                aria-hidden
-                className="transition-transform duration-500 ease-editorial group-hover:translate-x-2"
-              >
-                →
+              <span className="mt-6 flex items-end justify-between gap-6 text-title font-extrabold uppercase">
+                <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_3px] bg-bottom-left bg-no-repeat transition-[background-size] duration-700 ease-editorial group-hover:bg-[length:100%_3px]">
+                  {next.title}
+                </span>
+                <span
+                  aria-hidden
+                  className="transition-transform duration-500 ease-editorial group-hover:translate-x-2"
+                >
+                  →
+                </span>
               </span>
-            </span>
-          </ProjectLink>
+            </ProjectLink>
+          </div>
         )}
       </article>
-    </motion.div>
+    </Overlay>
   )
 }
 
-function ProjectImage({ media, index }: { media: Media; index: number }) {
-  if (!media.src) return <MediaFrame media={media} index={index + 1} />
+/**
+ * La copertina "in scena": entra dal basso davanti al numero del progetto in grande,
+ * che sale dietro di lei come la scritta WORK della galleria in homepage.
+ */
+function CoverStage({ project, number }: { project: Project; number: string }) {
+  const { cover } = project
+
+  return (
+    <div className="relative mt-12 flex justify-center overflow-hidden px-page py-10 md:mt-16 md:py-16">
+      <motion.p
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[60vw] leading-[0.8] font-extrabold tracking-[-0.06em] text-grey-200 select-none md:text-[46vw]"
+        initial={{ opacity: 0, y: '12%' }}
+        animate={{ opacity: 1, y: '0%' }}
+        transition={{ duration: 1.4, ease, delay: 0.4 }}
+      >
+        {number}
+      </motion.p>
+      {cover.src ? (
+        <motion.img
+          src={cover.src}
+          alt={cover.alt}
+          decoding="async"
+          className={cn(
+            'relative block h-auto max-h-[78svh] w-auto max-w-full',
+            cover.cutout && 'mix-blend-multiply',
+          )}
+          initial={{ opacity: 0, y: 80, rotate: -2 }}
+          animate={{ opacity: 1, y: 0, rotate: 0 }}
+          transition={{ duration: 1.2, ease, delay: 0.6 }}
+        />
+      ) : (
+        <div className="relative w-[min(60vw,24rem)]">
+          <MediaFrame media={cover} index={1} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Immagini della galleria: si aprono dal basso come una tenda quando entrano nello schermo. */
+function GalleryImage({ media, index }: { media: Media; index: number }) {
+  if (!media.src) return <MediaFrame media={media} index={index + 2} />
 
   return (
     <motion.img
-      // Due per riga da 768px in su: il browser sceglie dal srcSet la versione adatta.
-      sizes={media.srcSet ? '(min-width: 48rem) 50vw, 100vw' : undefined}
-      srcSet={media.srcSet}
       src={media.src}
       alt={media.alt}
-      // Con le dimensioni il browser riserva lo spazio subito: la pagina non salta mentre le foto caricano.
-      width={media.width}
-      height={media.height}
-      loading={index < 2 ? 'eager' : 'lazy'}
+      loading="lazy"
       decoding="async"
       className={cn(
         'block h-auto',
         media.cutout && 'mix-blend-multiply',
         // PNG scontornati: alla loro dimensione naturale (mai ingranditi), centrati.
-        media.fit === 'contain' ? 'mx-auto max-w-full py-8' : 'w-full',
+        media.fit === 'contain' ? 'mx-auto max-h-[85svh] w-auto max-w-full' : 'w-full',
       )}
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ clipPath: 'inset(100% 0% 0% 0%)', y: 40 }}
+      whileInView={{ clipPath: 'inset(0% 0% 0% 0%)', y: 0 }}
       viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-      transition={{ duration: 0.9, ease, delay: index < 2 ? 0.3 + index * 0.1 : 0 }}
+      transition={{ duration: 1.1, ease }}
     />
   )
 }

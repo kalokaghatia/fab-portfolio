@@ -13,16 +13,13 @@
   --color-ink: #0b0b0b;
   --color-paper: #f5f5f4;
   --color-white: #ffffff;
+  /* Unico accento colore del sito: il rosa della rubrica sul cibo. */
+  --color-pink: #f4a6c6;
   --color-grey-100: #ebebea;
   --color-grey-200: #dcdcdb;
   --color-grey-300: #c4c4c3;
-  /*
-   * Grigi per il testo secondario, tarati sul contrasto minimo WCAG:
-   * 500 = testo piccolo su paper (4.6:1); 400 = testo piccolo su ink (5.8:1)
-   * e testo grande su paper (3.1:1). Il 500 su ink non basta: lì si usa il 400.
-   */
-  --color-grey-400: #8b8b8a;
-  --color-grey-500: #6f6f6e;
+  --color-grey-400: #9d9d9c;
+  --color-grey-500: #767675;
   --color-grey-600: #555554;
   --color-grey-700: #3a3a39;
   --color-grey-800: #232322;
@@ -31,7 +28,7 @@
   /* Scala tipografica: microtesti editoriali ↔ titoli enormi */
   --text-micro: 0.6875rem;
   --text-micro--line-height: 1.25;
-  --text-micro--letter-spacing: 0.06em;
+  --text-micro--letter-spacing: 0.04em;
   --text-small: 0.8125rem;
   --text-small--line-height: 1.4;
   --text-body: 1rem;
@@ -47,6 +44,19 @@
   --text-display--letter-spacing: -0.06em;
 
   --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Nastri che scorrono all'infinito: il contenuto è duplicato, quindi basta spostarlo di metà. */
+  --animate-marquee: marquee 60s linear infinite;
+  --animate-marquee-reverse: marquee 60s linear infinite reverse;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
 }
 
 @layer base {
@@ -110,7 +120,7 @@
 @utility label {
   font-size: var(--text-micro);
   line-height: var(--text-micro--line-height);
-  letter-spacing: var(--text-micro--letter-spacing);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 500;
 }

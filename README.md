@@ -25,13 +25,11 @@ Base per un sito vetrina: React 19, TypeScript (strict), Vite, Tailwind CSS 4.
 
 ```
 src/
-  assets/      foto e immagini dei progetti (convertite in WebP in build)
-  components/  elementi riutilizzabili (MediaFrame, Reveal, RevealImage, ProjectLink, Wordmark)
+  components/  elementi riutilizzabili (MediaFrame, Reveal)
   content/     testi e dati del sito (segnaposto da sostituire)
-  hooks/       hook React (useMediaQuery, useFinePointer, usePathname)
+  hooks/       hook React (useFinePointer)
   layouts/     header, menu mobile, footer
-  lib/         preset di animazione e router minimo (History API)
-  pages/       pagina di un progetto, aperta sopra la homepage
+  lib/         preset di animazione condivisi
   sections/    sezioni della homepage
   styles/      design tokens e CSS globali (Tailwind)
   test/        setup di Vitest e Testing Library
@@ -41,23 +39,9 @@ src/
 
 Sistema visivo: vedi `DESIGN.md`. Alias `@/` → `src/`.
 
-## Immagini
-
-Importa le foto con `?responsive` (es. `import img from '@/assets/foto.jpg?responsive'`) e passale
-a `image()` in `src/content/site.ts`: [vite-imagetools](https://github.com/JonasKruckenberg/imagetools)
-le converte in WebP in più larghezze (fino all'originale), rimuove i metadati EXIF e fornisce
-larghezza e altezza. Dove mostri la foto, passa a `MediaFrame`/`RevealImage` il `sizes` con la
-larghezza che occupa (es. `"(min-width: 48rem) 50vw, 100vw"`).
-
 ## Variabili d'ambiente
 
-Al momento il sito non ne usa. Se servono, aggiungile a `.env.example` e copialo in `.env.local`:
-solo le variabili `VITE_*` arrivano al browser, quindi non inserire segreti.
-
-## Fine riga
-
-`.gitattributes` impone LF su tutti i file di testo, come si aspetta Prettier. Su una copia
-clonata prima di questa regola, `npm run format` converte i file esistenti.
+Copia `.env.example` in `.env.local`. Solo le variabili `VITE_*` arrivano al browser: non inserire segreti.
 
 ## Deploy
 
@@ -65,8 +49,3 @@ Build statica compatibile con Netlify e Vercel (rilevamento automatico di Vite):
 
 - comando di build: `npm run build`
 - cartella di output: `dist`
-
-Solo gli indirizzi dei progetti (`/work/<slug>`) vengono riscritti su `index.html`
-(`vercel.json`, `public/_redirects`): tutto il resto, se non esiste, risponde 404. Così
-`robots.txt` e file come `llms.txt` non ricevono per sbaglio la pagina HTML. Se aggiungi
-altre pagine lato client, aggiungi qui anche il loro percorso.
