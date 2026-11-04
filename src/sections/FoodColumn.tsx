@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { Eye } from '@/components/Eye'
 import { MediaFrame } from '@/components/MediaFrame'
 import { FadeIn, Reveal } from '@/components/Reveal'
+import { Glyph } from '@/components/Glyph'
 import { foodColumn } from '@/content/site'
 import type { Media } from '@/types/content'
 import { cn } from '@/utils/cn'
@@ -118,7 +119,7 @@ function InstagramBadge() {
       </motion.svg>
       <span className="absolute inset-[24%] flex flex-col items-center justify-center rounded-full bg-paper text-ink transition-transform duration-500 ease-editorial group-hover:scale-110">
         <span className="text-2xl leading-none transition-transform duration-500 ease-editorial group-hover:rotate-45">
-          ↗
+          <Glyph name="arrow-up-right" />
         </span>
         <span className="mt-1 text-[0.6rem] tracking-[0.12em] uppercase">Instagram</span>
       </span>
@@ -163,6 +164,7 @@ function Reel({
             <MediaFrame
               media={{ ...photo, aspect: 'portrait' }}
               index={start + (i % photos.length) + 1}
+              sizes="(min-width: 48rem) 19vw, 46vw"
             />
           </li>
         ))}

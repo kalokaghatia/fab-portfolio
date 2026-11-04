@@ -4,6 +4,7 @@ import { MediaFrame } from '@/components/MediaFrame'
 import { Overlay } from '@/components/Overlay'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { RevealImage } from '@/components/RevealImage'
+import { Glyph } from '@/components/Glyph'
 import { japanJournal, site } from '@/content/site'
 import { ease } from '@/lib/motion'
 import type { JapanCity } from '@/types/content'
@@ -97,7 +98,7 @@ export function JapanPage() {
                     {city.name}
                     {i < cities.length - 1 && (
                       <span aria-hidden className="font-light text-grey-400">
-                        →
+                        <Glyph name="arrow-right" strokeWidth={1.25} />
                       </span>
                     )}
                   </span>
@@ -183,7 +184,9 @@ function NextStop({ from, to }: { from: string; to: string }) {
         transition={{ duration: 1.6, ease }}
       />
       <span className="text-grey-500">Next stop</span>
-      <span>{to} →</span>
+      <span>
+        {to} <Glyph name="arrow-right" />
+      </span>
     </div>
   )
 }
@@ -231,7 +234,13 @@ function CityStop({ city, index }: { city: JapanCity; index: number }) {
       <ul className="mt-6 grid grid-cols-2 gap-2 md:mt-8 md:grid-cols-4 md:gap-4">
         {city.photos.map((photo, i) => (
           <li key={`${photo.alt}-${i}`}>
-            <RevealImage media={photo} fill delay={0.06 * i} className="aspect-[4/5]" />
+            <RevealImage
+              media={photo}
+              fill
+              delay={0.06 * i}
+              sizes="(min-width: 48rem) 25vw, 50vw"
+              className="aspect-[4/5]"
+            />
           </li>
         ))}
         {Array.from({ length: waiting }, (_, i) => (

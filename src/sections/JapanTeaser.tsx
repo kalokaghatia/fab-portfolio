@@ -1,6 +1,7 @@
 import { PageLink } from '@/components/PageLink'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { RevealImage } from '@/components/RevealImage'
+import { Glyph } from '@/components/Glyph'
 import { japanJournal } from '@/content/site'
 import { cityPath, japanPath } from '@/lib/router'
 import { cn } from '@/utils/cn'
@@ -46,6 +47,7 @@ export function JapanTeaser() {
           <RevealImage
             media={cover}
             fill
+            sizes="100vw"
             className="aspect-[4/5] md:aspect-[16/8] lg:aspect-[16/7]"
           />
           {/* Titolo sovrapposto alla copertina */}
@@ -122,7 +124,7 @@ export function JapanTeaser() {
               >
                 Open the journal
                 <span className="transition-transform duration-500 ease-editorial group-hover/open:translate-x-1">
-                  →
+                  <Glyph name="arrow-right" />
                 </span>
               </PageLink>
             </span>
@@ -141,6 +143,7 @@ export function JapanTeaser() {
               media={photo}
               fill
               delay={0.1 * (i + 1)}
+              sizes="(min-width: 64rem) 33vw, 50vw"
               className="aspect-[4/5] lg:aspect-[4/3]"
             />
             <span className="pointer-events-none absolute bottom-2 left-2 flex gap-3 bg-paper px-2 py-1 label">

@@ -3,6 +3,7 @@ import { MediaFrame } from '@/components/MediaFrame'
 import { Overlay } from '@/components/Overlay'
 import { ProjectLink } from '@/components/ProjectLink'
 import { FadeIn, Reveal } from '@/components/Reveal'
+import { Glyph } from '@/components/Glyph'
 import { projects, site } from '@/content/site'
 import { ease } from '@/lib/motion'
 import type { Media, Project } from '@/types/content'
@@ -81,7 +82,7 @@ export function ProjectPage({ project }: { project: Project }) {
                   aria-hidden
                   className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 >
-                  ↗
+                  <Glyph name="arrow-up-right" />
                 </span>
               </a>
             )}
@@ -143,7 +144,7 @@ export function ProjectPage({ project }: { project: Project }) {
                   aria-hidden
                   className="transition-transform duration-500 ease-editorial group-hover:translate-x-2"
                 >
-                  →
+                  <Glyph name="arrow-right" />
                 </span>
               </span>
             </ProjectLink>
@@ -174,7 +175,11 @@ function CoverStage({ project, number }: { project: Project; number: string }) {
       </motion.p>
       {cover.src ? (
         <motion.img
+          sizes={cover.srcSet ? 'min(100vw, 78svh)' : undefined}
+          srcSet={cover.srcSet}
           src={cover.src}
+          width={cover.width}
+          height={cover.height}
           alt={cover.alt}
           decoding="async"
           className={cn(
@@ -200,7 +205,12 @@ function GalleryImage({ media, index }: { media: Media; index: number }) {
 
   return (
     <motion.img
+      // Due per riga da 768px in su, una sola su mobile e per le immagini "wide"
+      sizes={media.srcSet ? (media.wide ? '100vw' : '(min-width: 48rem) 50vw, 100vw') : undefined}
+      srcSet={media.srcSet}
       src={media.src}
+      width={media.width}
+      height={media.height}
       alt={media.alt}
       loading="lazy"
       decoding="async"

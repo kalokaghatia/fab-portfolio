@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { RevealImage } from '@/components/RevealImage'
+import { Glyph } from '@/components/Glyph'
 import { contact, intro, portrait } from '@/content/site'
 import { cn } from '@/utils/cn'
 
@@ -20,7 +21,11 @@ export function Intro() {
 
         <div className="mt-6 grid-page gap-y-12 md:mt-10">
           <figure className="col-span-4 md:col-span-3 lg:sticky lg:top-24 lg:col-span-5 lg:self-start">
-            <RevealImage media={portrait} className="grayscale" />
+            <RevealImage
+              media={portrait}
+              className="grayscale"
+              sizes="(min-width: 64rem) 42vw, (min-width: 48rem) 50vw, 100vw"
+            />
             <figcaption className="mt-3 flex justify-between label">
               <span>Fab.</span>
               <span className="text-grey-500">Portrait — Studio</span>
@@ -58,7 +63,7 @@ export function Intro() {
                         aria-hidden
                         className="mx-[0.25em] inline-block align-[0.35em] text-[0.4em] text-grey-400"
                       >
-                        ✳
+                        <Glyph name="asterisk" />
                       </span>
                     )}
                   </li>
@@ -76,7 +81,7 @@ export function Intro() {
               >
                 Let’s work together
                 <span className="transition-transform duration-500 ease-editorial group-hover:translate-x-1">
-                  →
+                  <Glyph name="arrow-right" />
                 </span>
               </a>
               {contact.email && (
@@ -107,7 +112,9 @@ export function Intro() {
                   className="flex items-center text-title font-bold uppercase"
                 >
                   <span className="px-6 md:px-10">{word}</span>
-                  <span className="text-lead text-grey-500">✳</span>
+                  <span className="text-lead text-grey-500">
+                    <Glyph name="asterisk" />
+                  </span>
                 </span>
               ))}
             </div>

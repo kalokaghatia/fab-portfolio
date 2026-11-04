@@ -30,9 +30,12 @@ export default function App() {
         <ThroughMyEyes />
         <JapanTeaser />
         <FoodColumn />
-        <ContactCta />
       </main>
-      <SiteFooter />
+      {/* Contatti e footer stanno insieme in un'altezza schermo: in fondo alla pagina si vedono interi */}
+      <div className="flex min-h-svh flex-col bg-ink">
+        <ContactCta />
+        <SiteFooter />
+      </div>
       <AnimatePresence>
         {activeProject && <ProjectPage key={activeProject.slug} project={activeProject} />}
         {pathname === japanPath && <JapanPage key="japan" />}

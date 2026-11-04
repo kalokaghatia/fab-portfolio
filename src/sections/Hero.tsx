@@ -129,7 +129,12 @@ export function Hero() {
                 }}
                 transition={{ duration: 0.8, ease, delay: i * 0.06 + 0.2 }}
               >
-                <MediaFrame media={photo} index={i + 1} loading={i === 0 ? 'eager' : 'lazy'} />
+                <MediaFrame
+                  media={photo}
+                  index={i + 1}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  sizes="(min-width: 48rem) clamp(9rem, 20vw, 18rem), 40vw"
+                />
               </motion.div>
             )
           })}

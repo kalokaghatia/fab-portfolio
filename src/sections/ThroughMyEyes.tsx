@@ -44,7 +44,12 @@ export function ThroughMyEyes() {
 function FrameCard({ frame, index }: { frame: Frame; index: number }) {
   return (
     <figure>
-      <MediaFrame media={{ ...frame.photo, aspect: 'portrait' }} index={index + 1} />
+      <MediaFrame
+        media={{ ...frame.photo, aspect: 'portrait' }}
+        index={index + 1}
+        // Nastro a scorrimento da 768px in su, card da sfogliare col dito sotto
+        sizes="(min-width: 48rem) min(24vw, 52vh), 72vw"
+      />
       <figcaption className="mt-4 flex items-baseline gap-3">
         <span className="label text-grey-500">{pad(index + 1)}</span>
         <span className="text-lead leading-tight font-medium">{frame.caption}</span>
