@@ -1,8 +1,8 @@
 import { motion } from 'motion/react'
+import { useId } from 'react'
 import { Eye } from '@/components/Eye'
 import { MediaFrame } from '@/components/MediaFrame'
 import { FadeIn, Reveal } from '@/components/Reveal'
-import { Glyph } from '@/components/Glyph'
 import { foodColumn } from '@/content/site'
 import type { Media } from '@/types/content'
 import { cn } from '@/utils/cn'
@@ -87,7 +87,7 @@ export function FoodColumn() {
   )
 }
 
-/** Badge circolare con il nome della pagina che gira piano; al centro una freccia. */
+/** Badge circolare con il nome della pagina che gira piano; al centro il logo di Instagram. */
 function InstagramBadge() {
   const { handle, href } = foodColumn.instagram
   const text = `follow ${handle} · asian food · `
@@ -118,12 +118,38 @@ function InstagramBadge() {
         </text>
       </motion.svg>
       <span className="absolute inset-[24%] flex flex-col items-center justify-center rounded-full bg-paper text-ink transition-transform duration-500 ease-editorial group-hover:scale-110">
-        <span className="text-2xl leading-none transition-transform duration-500 ease-editorial group-hover:rotate-45">
-          <Glyph name="arrow-up-right" />
-        </span>
-        <span className="mt-1 text-[0.6rem] tracking-[0.12em] uppercase">Instagram</span>
+        <InstagramLogo className="w-[46%] transition-transform duration-500 ease-editorial group-hover:-rotate-6" />
       </span>
     </a>
+  )
+}
+
+/**
+ * Logo di Instagram a colori: quadrato con la sfumatura del marchio e fotocamera bianca,
+ * così il badge si riconosce al primo sguardo.
+ */
+function InstagramLogo({ className }: { className?: string }) {
+  // id univoco: il gradiente non si confonde con altri SVG della pagina
+  const gradient = useId()
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden focusable="false" className={className}>
+      <defs>
+        <radialGradient id={gradient} cx="0.3" cy="1.07" r="1.25">
+          <stop offset="0" stopColor="#ffd600" />
+          <stop offset="0.25" stopColor="#ff7a00" />
+          <stop offset="0.5" stopColor="#ff0069" />
+          <stop offset="0.75" stopColor="#d300c5" />
+          <stop offset="1" stopColor="#7638fa" />
+        </radialGradient>
+      </defs>
+      <rect width="24" height="24" rx="6.5" fill={`url(#${gradient})`} />
+      <g fill="none" stroke="#fff" strokeWidth="1.6">
+        <rect x="5" y="5" width="14" height="14" rx="4" />
+        <circle cx="12" cy="12" r="3.25" />
+      </g>
+      <circle cx="16.1" cy="7.9" r="0.95" fill="#fff" />
+    </svg>
   )
 }
 
