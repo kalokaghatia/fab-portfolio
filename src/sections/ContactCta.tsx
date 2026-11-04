@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FadeIn, Reveal } from '@/components/Reveal'
+import { Glyph } from '@/components/Glyph'
 import { contact } from '@/content/site'
 
 export function ContactCta() {
@@ -74,7 +75,7 @@ export function ContactCta() {
                 aria-hidden
                 className="shrink-0 text-[clamp(1.2rem,0.95rem+1.2vw,2.25rem)] leading-none font-light transition-transform duration-700 ease-editorial group-hover:rotate-45"
               >
-                ↗
+                <Glyph name="arrow-up-right" strokeWidth={1.25} />
               </span>
             </span>
           </a>
@@ -92,7 +93,13 @@ export function ContactCta() {
               className="border border-paper px-4 py-3 transition-colors duration-300 hover:bg-paper hover:text-ink"
               aria-live="polite"
             >
-              {copied ? 'Copied ✓' : 'Copy email'}
+              {copied ? (
+                <>
+                  Copied <Glyph name="check" />
+                </>
+              ) : (
+                'Copy email'
+              )}
             </button>
           )}
 
@@ -112,7 +119,7 @@ export function ContactCta() {
                       aria-hidden
                       className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                     >
-                      ↗
+                      <Glyph name="arrow-up-right" />
                     </span>
                   </a>
                 </li>

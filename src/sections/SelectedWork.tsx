@@ -3,6 +3,7 @@ import { useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent }
 import { MediaFrame } from '@/components/MediaFrame'
 import { ProjectLink } from '@/components/ProjectLink'
 import { Reveal } from '@/components/Reveal'
+import { Glyph } from '@/components/Glyph'
 import { projectCategories, projects } from '@/content/site'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ease } from '@/lib/motion'
@@ -79,7 +80,7 @@ export function SelectedWork() {
                       active ? 'w-[1.4em]' : 'group-hover:w-[1.4em]',
                     )}
                   >
-                    →
+                    <Glyph name="arrow-right" />
                   </span>
                   {category}
                   <span aria-hidden className="mt-[0.15em] ml-1.5 label">
@@ -232,7 +233,7 @@ function HorizontalGallery({ projects }: { projects: Project[] }) {
               aria-label={direction === -1 ? 'Previous projects' : 'Next projects'}
               className="grid size-11 place-items-center rounded-full border border-ink bg-paper text-base transition-colors duration-300 hover:bg-ink hover:text-paper"
             >
-              {direction === -1 ? '←' : '→'}
+              <Glyph name={direction === -1 ? 'arrow-left' : 'arrow-right'} />
             </button>
           ))}
         </div>

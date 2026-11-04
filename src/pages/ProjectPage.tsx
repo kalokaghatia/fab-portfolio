@@ -3,6 +3,7 @@ import { MediaFrame } from '@/components/MediaFrame'
 import { Overlay } from '@/components/Overlay'
 import { ProjectLink } from '@/components/ProjectLink'
 import { FadeIn, Reveal } from '@/components/Reveal'
+import { Glyph } from '@/components/Glyph'
 import { projects, site } from '@/content/site'
 import { ease } from '@/lib/motion'
 import type { Media, Project } from '@/types/content'
@@ -81,7 +82,7 @@ export function ProjectPage({ project }: { project: Project }) {
                   aria-hidden
                   className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 >
-                  ↗
+                  <Glyph name="arrow-up-right" />
                 </span>
               </a>
             )}
@@ -143,7 +144,7 @@ export function ProjectPage({ project }: { project: Project }) {
                   aria-hidden
                   className="transition-transform duration-500 ease-editorial group-hover:translate-x-2"
                 >
-                  →
+                  <Glyph name="arrow-right" />
                 </span>
               </span>
             </ProjectLink>

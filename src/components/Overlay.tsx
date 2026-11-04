@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { useEffect, type ReactNode } from 'react'
+import { Glyph } from '@/components/Glyph'
 import { site } from '@/content/site'
 import { ease } from '@/lib/motion'
 import { navigate, type RouteState } from '@/lib/router'
@@ -70,7 +71,7 @@ export function Overlay({ title, labelledBy, toolbar, children }: OverlayProps) 
               aria-hidden
               className="text-base transition-transform duration-500 ease-editorial group-hover:rotate-90"
             >
-              ✕
+              <Glyph name="close" />
             </span>
           </button>
         </div>

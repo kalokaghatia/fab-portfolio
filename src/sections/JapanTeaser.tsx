@@ -1,6 +1,7 @@
 import { PageLink } from '@/components/PageLink'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { RevealImage } from '@/components/RevealImage'
+import { Glyph } from '@/components/Glyph'
 import { japanJournal } from '@/content/site'
 import { cityPath, japanPath } from '@/lib/router'
 import { cn } from '@/utils/cn'
@@ -123,7 +124,7 @@ export function JapanTeaser() {
               >
                 Open the journal
                 <span className="transition-transform duration-500 ease-editorial group-hover/open:translate-x-1">
-                  →
+                  <Glyph name="arrow-right" />
                 </span>
               </PageLink>
             </span>

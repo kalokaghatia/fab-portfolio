@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { RevealImage } from '@/components/RevealImage'
+import { Glyph } from '@/components/Glyph'
 import { contact, intro, portrait } from '@/content/site'
 import { cn } from '@/utils/cn'
 
@@ -62,7 +63,7 @@ export function Intro() {
                         aria-hidden
                         className="mx-[0.25em] inline-block align-[0.35em] text-[0.4em] text-grey-400"
                       >
-                        ✳
+                        <Glyph name="asterisk" />
                       </span>
                     )}
                   </li>
@@ -80,7 +81,7 @@ export function Intro() {
               >
                 Let’s work together
                 <span className="transition-transform duration-500 ease-editorial group-hover:translate-x-1">
-                  →
+                  <Glyph name="arrow-right" />
                 </span>
               </a>
               {contact.email && (
@@ -111,7 +112,9 @@ export function Intro() {
                   className="flex items-center text-title font-bold uppercase"
                 >
                   <span className="px-6 md:px-10">{word}</span>
-                  <span className="text-lead text-grey-500">✳</span>
+                  <span className="text-lead text-grey-500">
+                    <Glyph name="asterisk" />
+                  </span>
                 </span>
               ))}
             </div>

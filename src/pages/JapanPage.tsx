@@ -4,6 +4,7 @@ import { MediaFrame } from '@/components/MediaFrame'
 import { Overlay } from '@/components/Overlay'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { RevealImage } from '@/components/RevealImage'
+import { Glyph } from '@/components/Glyph'
 import { japanJournal, site } from '@/content/site'
 import { ease } from '@/lib/motion'
 import type { JapanCity } from '@/types/content'
@@ -97,7 +98,7 @@ export function JapanPage() {
                     {city.name}
                     {i < cities.length - 1 && (
                       <span aria-hidden className="font-light text-grey-400">
-                        →
+                        <Glyph name="arrow-right" strokeWidth={1.25} />
                       </span>
                     )}
                   </span>
@@ -183,7 +184,9 @@ function NextStop({ from, to }: { from: string; to: string }) {
         transition={{ duration: 1.6, ease }}
       />
       <span className="text-grey-500">Next stop</span>
-      <span>{to} →</span>
+      <span>
+        {to} <Glyph name="arrow-right" />
+      </span>
     </div>
   )
 }
