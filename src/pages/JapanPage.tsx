@@ -231,7 +231,13 @@ function CityStop({ city, index }: { city: JapanCity; index: number }) {
       <ul className="mt-6 grid grid-cols-2 gap-2 md:mt-8 md:grid-cols-4 md:gap-4">
         {city.photos.map((photo, i) => (
           <li key={`${photo.alt}-${i}`}>
-            <RevealImage media={photo} fill delay={0.06 * i} className="aspect-[4/5]" />
+            <RevealImage
+              media={photo}
+              fill
+              delay={0.06 * i}
+              sizes="(min-width: 48rem) 25vw, 50vw"
+              className="aspect-[4/5]"
+            />
           </li>
         ))}
         {Array.from({ length: waiting }, (_, i) => (

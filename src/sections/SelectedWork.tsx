@@ -265,7 +265,7 @@ function CollageCard({ project, index }: { project: Project; index: number }) {
         >
           {/* Foto sempre centrata nella cornice; al passaggio del mouse si avvicina appena */}
           <div className="transition-transform duration-1000 ease-editorial group-hover:scale-[1.04]">
-            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} />
+            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} sizes="min(24vw, 46vh)" />
           </div>
         </motion.div>
         {/* Didascalia su fondo carta: leggibile anche sopra la scritta WORK nera */}
@@ -296,7 +296,7 @@ function SwipeGallery({ projects }: { projects: Project[] }) {
             aria-label={`${project.title} — ${project.discipline}`}
             className="block"
           >
-            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} />
+            <MediaFrame media={{ ...project.cover, aspect: 'portrait' }} sizes="78vw" />
             <p className="mt-3 text-lead leading-none font-bold tracking-[-0.04em] uppercase">
               {project.title}
             </p>

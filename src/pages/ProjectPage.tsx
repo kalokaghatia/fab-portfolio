@@ -174,7 +174,11 @@ function CoverStage({ project, number }: { project: Project; number: string }) {
       </motion.p>
       {cover.src ? (
         <motion.img
+          sizes={cover.srcSet ? 'min(100vw, 78svh)' : undefined}
+          srcSet={cover.srcSet}
           src={cover.src}
+          width={cover.width}
+          height={cover.height}
           alt={cover.alt}
           decoding="async"
           className={cn(
@@ -200,7 +204,12 @@ function GalleryImage({ media, index }: { media: Media; index: number }) {
 
   return (
     <motion.img
+      // Due per riga da 768px in su, una sola su mobile e per le immagini "wide"
+      sizes={media.srcSet ? (media.wide ? '100vw' : '(min-width: 48rem) 50vw, 100vw') : undefined}
+      srcSet={media.srcSet}
       src={media.src}
+      width={media.width}
+      height={media.height}
       alt={media.alt}
       loading="lazy"
       decoding="async"

@@ -163,6 +163,7 @@ function Reel({
             <MediaFrame
               media={{ ...photo, aspect: 'portrait' }}
               index={start + (i % photos.length) + 1}
+              sizes="(min-width: 48rem) 19vw, 46vw"
             />
           </li>
         ))}
