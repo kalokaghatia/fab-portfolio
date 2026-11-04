@@ -25,6 +25,45 @@ function Asterisk8(props: LucideProps) {
   )
 }
 
+/*
+ * Lucide dalla versione 1 non ha più i marchi: Instagram e LinkedIn sono ridisegnati
+ * qui con lo stesso tratto, così stanno accanto alle frecce senza stonare.
+ */
+function Instagram(props: LucideProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <path d="M17.5 6.5h.01" />
+    </svg>
+  )
+}
+
+function LinkedIn(props: LucideProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2.5" />
+      <path d="M8 10.5v6M8 7.5v.01M12 16.5v-6M12 13.25a2.75 2.75 0 0 1 5.5 0v3.25" />
+    </svg>
+  )
+}
+
 const glyphs = {
   'arrow-left': ArrowLeft,
   'arrow-right': ArrowRight,
@@ -32,10 +71,14 @@ const glyphs = {
   asterisk: Asterisk8,
   check: Check,
   close: X,
+  instagram: Instagram,
+  linkedin: LinkedIn,
 } satisfies Record<string, LucideIcon | typeof Asterisk8>
 
+export type GlyphName = keyof typeof glyphs
+
 interface GlyphProps {
-  name: keyof typeof glyphs
+  name: GlyphName
   className?: string
   /** Spessore del tratto su una griglia di 24: più basso per i simboli grandi e leggeri. */
   strokeWidth?: number

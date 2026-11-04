@@ -131,10 +131,12 @@ export const contact = {
     {
       label: 'Instagram',
       handle: '@fabianaruotolo',
+      icon: 'instagram',
       href: 'https://www.instagram.com/fabianaruotolo/',
     },
     {
       label: 'LinkedIn',
+      icon: 'linkedin',
       href: 'https://www.linkedin.com/in/fabiana-ruotolo-04a36a213/',
     },
   ] satisfies SocialLink[],

@@ -39,6 +39,8 @@ export interface SocialLink {
   label: string
   /** Nome utente mostrato accanto al social, es. "@fabianaruotolo". */
   handle?: string
+  /** Icona del social, mostrata nel link prima del nome. */
+  icon?: 'instagram' | 'linkedin'
   /** null = contatto non ancora fornito: viene mostrato come segnaposto. */
   href: string | null
 }

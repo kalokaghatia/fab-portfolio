@@ -115,6 +115,9 @@ export function ContactCta() {
                     rel="noreferrer"
                     className="group inline-flex items-center gap-2 border-b border-paper pb-1"
                   >
+                    {social.icon && (
+                      <Glyph name={social.icon} strokeWidth={1.5} className="text-base" />
+                    )}
                     {social.label}
                     {social.handle && <span className="normal-case">{social.handle}</span>}
                     <span
