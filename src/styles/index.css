@@ -124,3 +124,27 @@
   text-transform: uppercase;
   font-weight: 500;
 }
+
+/*
+ * Francobollo: cornice bianca con i bordi dentellati. I fori sono cerchi del colore
+ * di ciò che sta sotto (--stamp-hole), disegnati lungo i quattro lati.
+ */
+@utility stamp {
+  --stamp-hole: var(--color-paper);
+  --stamp-dot: radial-gradient(circle, var(--stamp-hole) 2.8px, transparent 3.2px);
+  position: relative;
+  background-color: #fff;
+  padding: 6px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      var(--stamp-dot) 0 -5px / 10px 10px repeat-x,
+      var(--stamp-dot) 0 calc(100% + 5px) / 10px 10px repeat-x,
+      var(--stamp-dot) -5px 0 / 10px 10px repeat-y,
+      var(--stamp-dot) calc(100% + 5px) 0 / 10px 10px repeat-y;
+  }
+}

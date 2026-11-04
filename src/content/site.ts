@@ -84,6 +84,7 @@ import osakaEscalatorImg from '@/assets/photos/osaka/escalator.jpg?responsive'
 import osakaNintendoImg from '@/assets/photos/osaka/nintendo.jpg?responsive'
 import osakaTeppanyakiImg from '@/assets/photos/osaka/teppanyaki.jpg?responsive'
 import shinjukuNightImg from '@/assets/photos/japan-shinjuku-night.jpg?responsive'
+import fujiStampImg from '@/assets/photos/fuji-stamp.png?responsive'
 import type {
   JapanCity,
   Media,
@@ -140,6 +141,12 @@ export const contact = {
       href: 'https://www.linkedin.com/in/fabiana-ruotolo-04a36a213/',
     },
   ] satisfies SocialLink[],
+  /** Il blocco contatti è una carta d'imbarco: matrice con francobollo e tratta. */
+  ticket: {
+    number: 'No. 06',
+    route: { from: 'Tokyo', to: 'Fab' },
+    stamp: { ...image(fujiStampImg), alt: '', aspect: 'square' } satisfies Media,
+  },
 }
 
 /* Bozza ricavata dal brief: da rivedere con parole tue. */

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import wavesUrl from '@/assets/ticket-waves.svg'
 import { FadeIn, Reveal } from '@/components/Reveal'
 import { Glyph } from '@/components/Glyph'
 import { contact } from '@/content/site'
 
 export function ContactCta() {
   const [copied, setCopied] = useState(false)
+  const { ticket } = contact
 
   useEffect(() => {
     if (!copied) return
@@ -53,88 +55,119 @@ export function ContactCta() {
       </div>
 
       {/*
-        "Write me": email grande in bianco pieno sul nero, tra due linee sottili.
-        Il contrasto nasce dalla scala del testo, non da un riquadro. Al passaggio del mouse
-        la freccia ruota e una linea si disegna sotto l'indirizzo.
+        Carta d'imbarco: a sinistra la matrice da strappare con il francobollo del Fuji,
+        a destra il biglietto con le linee ondulate di sicurezza, l'email e i social.
       */}
-      <FadeIn className="mt-auto pt-[clamp(1rem,3svh,3rem)]">
-        {contact.email ? (
-          <a
-            href={`mailto:${contact.email}`}
-            className="group block border-y border-paper/30 py-[clamp(0.75rem,2.5svh,2.5rem)] text-paper"
-          >
-            <span className="flex items-baseline justify-between label">
-              <span>Write me</span>
-              <span className="text-grey-400">Click to send</span>
+      <FadeIn className="mt-auto flex pt-[clamp(1rem,3svh,3rem)] text-ink">
+        <div className="flex w-[clamp(6.5rem,20vw,9.5rem)] shrink-0 flex-col gap-[clamp(0.5rem,1.5svh,0.75rem)] rounded-l-lg border-r-2 border-dashed border-grey-300 bg-paper p-[clamp(0.625rem,2svh,1rem)]">
+          <div className="stamp w-full max-w-[clamp(4.5rem,13svh,6.5rem)]">
+            <img
+              src={ticket.stamp.src}
+              srcSet={ticket.stamp.srcSet}
+              sizes="6.5rem"
+              width={ticket.stamp.width}
+              height={ticket.stamp.height}
+              alt={ticket.stamp.alt}
+              loading="lazy"
+              decoding="async"
+              className="block h-auto w-full"
+            />
+          </div>
+          <p className="label text-grey-500">
+            <span className="whitespace-nowrap">Ticket {ticket.number}</span>
+            <span className="mt-1 flex items-center gap-1">
+              {ticket.route.from} <Glyph name="arrow-right" /> {ticket.route.to}
             </span>
-            <span className="mt-[clamp(0.75rem,3svh,3.5rem)] flex items-end justify-between gap-4">
-              <span className="text-[clamp(1.2rem,0.95rem+1.2vw,2.25rem)] leading-[0.95] font-extrabold tracking-[-0.045em] break-all">
-                <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_0.06em] bg-bottom-left bg-no-repeat pb-[0.05em] transition-[background-size] duration-700 ease-editorial group-hover:bg-[length:100%_0.06em]">
-                  {contact.email}
-                </span>
+          </p>
+        </div>
+
+        <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-r-lg bg-paper p-[clamp(0.75rem,2.5svh,1.5rem)] @container">
+          {/* Linee ondulate da tre centri, calcolate una volta sola: vedi src/assets/ticket-waves.svg */}
+          <img
+            src={wavesUrl}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            decoding="async"
+            className="pointer-events-none absolute inset-0 size-full"
+          />
+          <div className="relative flex items-center justify-between label text-grey-500">
+            <span>Boarding pass</span>
+            <span className="flex items-center gap-1">
+              Gate <Glyph name="asterisk" />
+            </span>
+          </div>
+
+          {contact.email ? (
+            <a
+              href={`mailto:${contact.email}`}
+              className="group relative mt-auto flex items-end gap-[0.3em] pt-[clamp(0.5rem,3svh,3rem)] text-[length:min(2.5rem,8cqi)] leading-[0.95] font-extrabold tracking-[-0.045em] whitespace-nowrap"
+            >
+              {/* L'email sta sempre su una riga: la misura segue la larghezza del biglietto */}
+              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_0.06em] bg-bottom-left bg-no-repeat pb-[0.05em] transition-[background-size] duration-700 ease-editorial group-hover:bg-[length:100%_0.06em]">
+                {contact.email}
               </span>
               <span
                 aria-hidden
-                className="shrink-0 text-[clamp(1.2rem,0.95rem+1.2vw,2.25rem)] leading-none font-light transition-transform duration-700 ease-editorial group-hover:rotate-45"
+                className="shrink-0 font-light transition-transform duration-700 ease-editorial group-hover:rotate-45"
               >
                 <Glyph name="arrow-up-right" strokeWidth={1.25} />
               </span>
-            </span>
-          </a>
-        ) : (
-          <p className="border-y border-paper/30 py-6 text-lead font-semibold text-grey-500 md:py-10">
-            [email@to-be-added]
-          </p>
-        )}
-
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 label">
-          {contact.email && (
-            <button
-              type="button"
-              onClick={() => void copyEmail()}
-              className="border border-paper px-4 py-3 transition-colors duration-300 hover:bg-paper hover:text-ink"
-              aria-live="polite"
-            >
-              {copied ? (
-                <>
-                  Copied <Glyph name="check" />
-                </>
-              ) : (
-                'Copy email'
-              )}
-            </button>
+            </a>
+          ) : (
+            <p className="relative mt-auto pt-6 text-lead font-semibold text-grey-500">
+              [email@to-be-added]
+            </p>
           )}
 
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {contact.socials.map((social) =>
-              social.href ? (
-                <li key={social.label}>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group inline-flex items-center gap-2 border-b border-paper pb-1"
-                  >
-                    {social.icon && (
-                      <Glyph name={social.icon} strokeWidth={1.5} className="text-base" />
-                    )}
-                    {social.label}
-                    {social.handle && <span className="normal-case">{social.handle}</span>}
-                    <span
-                      aria-hidden
-                      className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          <div className="relative mt-[clamp(0.5rem,2svh,1rem)] flex flex-wrap items-center gap-x-5 gap-y-2 label">
+            <ul className="flex flex-wrap gap-x-5 gap-y-2">
+              {contact.socials.map((social) =>
+                social.href ? (
+                  <li key={social.label}>
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group inline-flex items-center gap-2 border-b border-ink pb-1"
                     >
-                      <Glyph name="arrow-up-right" />
-                    </span>
-                  </a>
-                </li>
-              ) : (
-                <li key={social.label} className="text-grey-500">
-                  {social.label} — [link]
-                </li>
-              ),
+                      {social.icon && (
+                        <Glyph name={social.icon} strokeWidth={1.5} className="text-base" />
+                      )}
+                      {social.label}
+                      {social.handle && <span className="normal-case">{social.handle}</span>}
+                      <span
+                        aria-hidden
+                        className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      >
+                        <Glyph name="arrow-up-right" />
+                      </span>
+                    </a>
+                  </li>
+                ) : (
+                  <li key={social.label} className="text-grey-500">
+                    {social.label} — [link]
+                  </li>
+                ),
+              )}
+            </ul>
+            {contact.email && (
+              <button
+                type="button"
+                onClick={() => void copyEmail()}
+                className="ml-auto border border-ink bg-paper px-3 py-2 transition-colors duration-300 hover:bg-ink hover:text-paper"
+                aria-live="polite"
+              >
+                {copied ? (
+                  <>
+                    Copied <Glyph name="check" />
+                  </>
+                ) : (
+                  'Copy email'
+                )}
+              </button>
             )}
-          </ul>
+          </div>
         </div>
       </FadeIn>
     </section>
